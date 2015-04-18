@@ -246,6 +246,12 @@ function cmd_ssh(param) {
 		host = parts[1];
 	}
 
+
+	ssh_connect(user, host, function() {
+				console_finishedCommand();});
+
+}
+function ssh_connect(user, host, afterConnect) {
 	var pc = getHost(current_computer, host);
 	if (pc == null) {
 		console_printErrln("ssh: unknown host " + host);
@@ -256,10 +262,10 @@ function cmd_ssh(param) {
 	// TODO check if there is an ssh server running
 
 	console_print("Password: ");
-	console_enterPassword(function(passwd){ssh_callback(1, user, pc, passwd);});
+	console_enterPassword(function(passwd){ssh_callback(1, user, pc, passwd, afterConnect);});	
 }
 
-function ssh_callback(tries, user, pc, passwd) {
+function ssh_callback(tries, user, pc, passwd, afterConnect) {
 	for (var i = 0; i < pc.users.length; i++) {
 		if (pc.users[i].name == user) {
 			if (pc.users[i].password == passwd) {
@@ -276,9 +282,8 @@ function ssh_callback(tries, user, pc, passwd) {
 				}
 
 				// ssh connection successfully established
-				
+				afterConnect();
 
-				console_finishedCommand();
 				return;
 			}
 			break;
@@ -370,6 +375,13 @@ function cmd_cp(param, flags) {
 			console_printErrln("cp: " + param[1] + ": No such file or directory");
 			console_finishedCommand(1);
 		} else {
+			if (src.directory) {
+				if (!inArray("r", flags)) {
+					console_printErrln("cp: omitting directory '" + param[1] + "'");
+					console_finishedCommand(1);
+					return;
+				}
+			}
 			var dest = getFile(current_computer.pwd, param[2], true);
 			var name = "";
 			if (dest == null) {
@@ -390,13 +402,7 @@ function cmd_cp(param, flags) {
 				}
 			}
 			
-			if (src.directory) {
-				if (!inArray("r", flags)) {
-					console_printErrln("cp: omitting directory '" + param[1] + "'");
-					console_finishedCommand(1);
-					return;
-				}
-			}
+
 			copyFile(src, dest, name);
 			console_finishedCommand();
 		}
@@ -411,4 +417,53 @@ function copyFile(src, dest, name) {
 	}
 	file.path = createPath(dest.path, file.name);
 	dest.files.push(file);
+}
+
+function cmd_scp(param) {
+
+	var src = getFile(current_computer.pwd, param[1]);
+	if (src == null) {
+		console_printErrln("scp: " + param[1] + ": No such file or directory");
+		console_finishedCommand(1);
+		return;
+	}
+
+	if (src.directory) {
+		if (!inArray("r", flags)) {
+			console_printErrln("scp: omitting directory '" + param[1] + "'");
+			console_finishedCommand(1);
+			return;
+		}
+	}
+
+	// TODO check for errors
+	var parts = param[2].split(":");
+	var userhost = parts[0].split("@"); 
+
+	ssh_connect(userhost[0], userhost[1], 
+		function() {
+			var dest = getFile(current_computer.pwd, parts[1], true);
+			var name = "";
+			if (dest == null) {
+				var lio = parts[1].lastIndexOf("/");
+				if (lio < 0) {
+					dest = current_computer.pwd;
+					name = parts[1];
+				} else {
+					dest = getFile(current_computer.pwd, parts[1].substring(0, lio), true);	
+					name = parts[1].substring(lio + 1);
+				}
+				
+
+				if (dest == null) {
+					console_printErrln("scp: " + parts[1] + ": No such file or directory");
+					console_finishedCommand(1);
+					return;
+				}
+			}
+			
+			copyFile(src, dest, name);
+			ssh_close(0);
+		}
+	);
 }

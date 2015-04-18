@@ -74,6 +74,16 @@ var current_computer = {
 						executable: true,
 						name: "cp",
 						cmd: cmd_cp
+					},
+					{
+						executable: true,
+						name: "scp",
+						cmd: cmd_scp
+					},
+					{
+						executable: true,
+						name: "ssh",
+						cmd: cmd_ssh
 					}
 				]
 			}

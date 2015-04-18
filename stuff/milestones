@@ -9,10 +9,11 @@ Past goals:
 
 Current goal:
 - create commands to communicate between computers
+ - wget
+ - scp
 
 Next goals:
 - create programs and viruses/exploits to hack them
-- check access rights for all commands
 - save the current progress in local storage
 - random computers in the network you can hack and take over
  - based on presets
@@ -20,10 +21,10 @@ Next goals:
  - password generator
   - define the strength of a password
  - file generator
+- irc/email to get tutorial infos
+- fix bugs
 
 Further Ideas:
-- irc/email to get tutorial infos
-
 - command history (up/down)
 - copy/paste? :/
 - running programms parallel (so you are not bored while waiting for your pwcrackers)
