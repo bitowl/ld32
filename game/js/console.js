@@ -143,18 +143,35 @@ function console_println(text) {
 }
 function console_updatePosition() {
 	textarea.caretTo(console_position);
-
-	// setCaretToPos(textarea, console_position);
 }
 
 
 
 function console_execute(cmd) {
 	var parts = cmd.split(" ");
-	if (typeof commands[parts[0]] !== 'undefined') {
+
+	if (parts[0].startsWith("./") || parts[0].startsWith("/")) {
+		// local file
+		var file = getFile(current_computer.pwd, parts[0]);
+		if (file == null) {
+			console_printErrln("mlsh: " + parts[0] + ": No such file or directory");
+			console_finishedCommand(1);
+		} else {
+			if (file.directory) {
+				console_printErrln("mlsh: " + parts[0] + ": Is a directory");
+				console_finishedCommand(1);
+			} else if (!file.executable) {
+				console_printErrln("mlsh: " + parts[0] + ": Permission denied");
+				console_finishedCommand(1);
+			} else {
+				// THIS FILE REALLY IS AN EXECUTABLE \ö/
+				file.cmd(parts);
+			}
+		}
+	} else if (typeof commands[parts[0]] !== 'undefined') {
 		commands[parts[0]](parts);
 	} else {
-		console_printError("mlsh: " + parts[0] + ": command not found\n");
+		console_printErrln("mlsh: " + parts[0] + ": command not found");
 		console_finishedCommand(1);
 	}
 }
@@ -243,7 +260,7 @@ function console_pwd_Backspace() {
 }
 
 function console_pwd_Enter() {
-	console_print(console_pwd + "\n");
+	console_print("\n");
 	console_state = console_state_wait;
 	console_pwd_callback(console_pwd);
 	console_pwd = "";

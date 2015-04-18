@@ -2,20 +2,28 @@ Past goals:
 - get a command line working where you can enter commands and print stuff
 - parse and handle commands
 - create users with passwords
+- create multiple computers
 
 Current goal:
-- create multiple computers
+- create commands to communicate between computers
 
 Next goals:
 - create a working "file system" with contents
-- create commands to communicate between computers
+ - place the programs you can use into real files?
 - create programs and viruses/exploits to hack them
 - check access rights for all commands
 - save the current progress in local storage
+- random computers in the network you can hack and take over
+ - based on presets
+ - username generator
+ - password generator
+  - define the strength of a password
+ - file generator
 
 Further Ideas:
 - irc/email to get tutorial infos
-- random computers in the network you can hack and take over
- - username generator
- - password generator
+
+- command history (up/down)
+- copy/paste? :/
+- running programms parallel (so you are not bored while waiting for your pwcrackers)
 - turn the whole thing into a browsergame :D

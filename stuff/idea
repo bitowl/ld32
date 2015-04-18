@@ -13,4 +13,9 @@ buy viruses/malware/bruteforcers via irc/ftp/?
 
 -- hacking tools --
 password cracker: needs a certain time to crack a passwort for an open ssh/ftp/db/mail-server given the username
-virus: exploiting a certain flaw in a program
+virus: exploiting a certain flaw in a program. If it gets access to a root account, it can start a ssh-server on the remote machine
+
+-- protection tools --
+after you hacked into a system you have to protect it or else it might get hacked again
+firewall: to reject access from outside to unneceessary things like databases
+file rights: set the right files to certain files to avoid password being read from the outside

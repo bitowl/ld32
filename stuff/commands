@@ -18,6 +18,10 @@ tail
 less
 rm
 echo with pipe
+chmod
+chown
+cp
+mv
 
 -- users:
 sudo
@@ -29,6 +33,8 @@ who
 -- processes:
 ps (aux)
 top / htop
+kill
+bg / fg
 
 
 -- network:
@@ -41,5 +47,6 @@ curl
 nmap
 hostname
 whois
+exit
 
 
