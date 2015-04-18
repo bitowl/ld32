@@ -39,7 +39,19 @@ var current_computer = {
 					{
 						directory: true,
 						name: "bitowl",
-						files:[]
+						files:[
+							{
+								directory: true,
+								name: "pr0n",
+								files: [
+									{
+										executable: true,
+										name: "ftpH4xx0r",
+										cmd: cmd_ftpHack
+									}
+								]
+							}
+						]
 					}
 				]
 			},
@@ -94,6 +106,11 @@ var current_computer = {
 					},
 					{
 						executable: true,
+						name: "nmap",
+						cmd: cmd_nmap
+					},
+					{
+						executable: true,
 						name: "service",
 						cmd: cmd_service
 					},
@@ -103,7 +120,8 @@ var current_computer = {
 						files: [
 							{
 								name: "bealake",
-								cmd: svc_bealake
+								cmd: svc_bealake,
+								version: 3.14
 							}
 						]
 					}
@@ -112,9 +130,7 @@ var current_computer = {
 		]
 	},
 	running: [],
-	ports: {
-		21: 102
-	}
+	ports: {}
 };
 current_computer.current_user = current_computer.users[0];
 current_computer.pwd = current_computer.root.files[0].files[0];
@@ -135,7 +151,7 @@ function boot(pc) {
 	pc.pid = 2;
 
 	for (var i = 0; i < pc.init.length; i++) {
-		computer_exec(pc, pc.users[0].id, pc.init[i]);
+		init_service(pc, pc.init[i]);
 	};
 }
 
@@ -150,10 +166,10 @@ function computer_printPS(pc) {
 	console_print("$ ");
 }
 
-function computer_exec(pc, uid, cmd) {
+function computer_exec(pc, uid, cmd ,fg) {
 	var parts = cmd.split(" ");
 	var file;
-	if (parts[0].startsWith("./") || parts[0].startsWith("/")) {
+	if (parts[0].indexOf("/") > -1) {
 		// local file
 		file = getFile(pc.pwd, parts[0]);
 	} else {
@@ -197,21 +213,45 @@ function computer_exec(pc, uid, cmd) {
 			}
 			pc.running.push(process);
 			
-			pc.current_user.fgPid = process.id;
-			console.log(pc.current_user);
+			if (fg) {
+				pc.current_user.fgPid = process.id;
+				console.log(pc.current_user);
+			}
 			file.cmd(params, flags, process, pc);
 		}
 	}
 
 }
 
-function bindPort(pc, port, pid) {
+function bindPort(pc, pid, port) {
 	if (typeof pc.ports[port] != 'undefined') {
 		return false;
 	}
 	pc.ports[port] = pid;
 	return true;
 }
+function unbindPort(pc, pid, port) {
+	if (pc.ports[port] == pid) {
+		delete pc.ports[port];
+	}
+}
 
 boot(current_computer);
 boot(pc1);
+
+var jsonify=function(o){
+    var seen=[];
+    var jso=JSON.stringify(o, function(k,v){
+        if (typeof v =='object') {
+            if ( !seen.indexOf(v) ) { return '__cycle__'; }
+            seen.push(v);
+        } return v;
+    });
+    return jso;
+};
+
+
+
+
+
+// console.log(utf8_to_b64(JSONE.stringify(internet)).length);

@@ -8,12 +8,13 @@ Past goals:
 - place the programs you can use into real files
 
 Current goal:
-- create programs and viruses/exploits to hack them
+- save the current progress in local storage
 
 Next goals:
+- create more programs and viruses/exploits to hack them
 - create commands to communicate between computers
  - wget
-- save the current progress in local storage
+
 - random computers in the network you can hack and take over
  - based on presets
  - username generator
@@ -21,6 +22,8 @@ Next goals:
   - define the strength of a password
  - file generator
 - irc/email to get tutorial infos
+- money sources
+
 - fix bugs
 
 Further Ideas:

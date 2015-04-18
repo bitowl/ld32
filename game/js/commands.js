@@ -250,6 +250,7 @@ function cmd_ssh(param) {
 
 }
 function ssh_connect(user, host, afterConnect) {
+	// TODO configure port
 	var pc = getHost(current_computer, host);
 	if (pc == null) {
 		console_printErrln("ssh: unknown host " + host);
@@ -257,8 +258,11 @@ function ssh_connect(user, host, afterConnect) {
 		return;
 	}
 
-	// TODO check if there is an ssh server running
-
+	if (pc.ports[22] == null) { // TODO implement ssh servers running on secret ports
+		setTimeout(function() {console_printErrln("ssh: connect to host " + host + " port 22: Connection timed out");
+		console_finishedCommand(1);}, 1000); // TODO configure
+		return;
+	}
 	console_print("Password: ");
 	console_enterPassword(function(passwd){ssh_callback(1, user, pc, passwd, afterConnect);});	
 }
@@ -320,6 +324,7 @@ function ssh_close(retVal) {
 function cmd_nmap(param) {
 	var host = getHost(current_computer, param[1]);
 	if (host == null) {
+		console_printErrln("nmap: unknown host "+ param[1]);
 		console_finishedCommand(1);
 		return;
 	}
@@ -472,4 +477,46 @@ function cmd_ps(param) {
 	}
 
 	console_finishedCommand();
+}
+
+
+
+
+
+
+
+
+////// hacks
+function cmd_ftpHack(param) {
+	simpleHack(param, "ftp", 0, 1.4, 2000);
+}
+
+function simpleHack(param, service, minVersion, maxVersion, duration) {
+	var host = getHost(current_computer, param[1]);
+	if (host == null) {
+		console_printErrln("unknown host "+ param[1]);
+		console_finishedCommand(1);
+		return;
+	}
+	console_println("initiate hack...");
+	setTimeout(function(){
+		for (var i = 0; i < host.running.length; i++) {
+			if (host.running[i].name == service) {
+				// the server is running the affected service...
+				if (host.running[i].version >= minVersion && host.running[i].version <= maxVersion) {
+
+					console_println("hack successfull");
+					console_finishedCommand();
+					return;
+				} else {
+					console_printErrln("could not connect to target service.");
+					console_finishedCommand(1);			
+					return;
+				}
+			}
+		};
+		console_printErrln("could not connect to target service.");
+		console_finishedCommand(1);
+	},duration); // TODO change with internet speed
+
 }

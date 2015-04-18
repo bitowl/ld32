@@ -51,6 +51,32 @@ var pc1 = {
 						executable: true,
 						name: "cat",
 						cmd: cmd_cat
+					},
+					{
+						executable: true,
+						name: "exit",
+						cmd: cmd_exit
+					},
+					{
+						executable:true,
+						name: "service",
+						cmd: cmd_service,
+					},
+					{
+						directory: true,
+						name: "services",
+						files: [
+						{
+							name: "ftp",
+							version: 1,
+							cmd: svc_ftp
+						},
+						{
+							name: "ssh",
+							version: 2.2,
+							cmd: svc_ssh
+						}
+						]
 					}]
 				},
 				{
@@ -60,22 +86,9 @@ var pc1 = {
 				}
 			]
 		},
-		running: [
-			{
-				id: 1,
-				name: "init",
-				uid: 0
-			},
-			{
-				id:2,
-				name:"sshd",
-				uid:0
-			}
-		],
-		ports: {
-			21:2
-		},
-		init:[],
+		running: [],
+		ports: {},
+		init:["ssh", "ftp"],
 	};
 internet[1] = pc1;
 var ssh_stack = []; // stack of the previous ips we were connected to via ssh

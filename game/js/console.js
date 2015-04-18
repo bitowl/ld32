@@ -148,7 +148,7 @@ function console_updatePosition() {
 
 
 function console_execute(cmd) {
-	computer_exec(current_computer, current_computer.current_user.id, cmd);
+	computer_exec(current_computer, current_computer.current_user.id, cmd, true);
 }
 function console_finishedCommand(retVal) {  // call this when a command has finished execution
    	retVal = typeof retVal !== 'undefined' ? retVal : 0; // by default this execution was happy
