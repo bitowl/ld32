@@ -44,7 +44,6 @@ function console_setUp() {
 }
 
 function console_keyDown(event) {
-	console.log("down: " + event.which);
 	switch(event.which) {
 		case 9: // tab
 		case 37: // left
@@ -79,10 +78,7 @@ function console_keyDown(event) {
 		case 46: // delete
 			console_state.del();
 			break;
-
 	}
-
-
 }
 
 function console_keyPressed(event) {
@@ -99,19 +95,13 @@ function console_keyPressed(event) {
 
 	}
 
-
 	event.preventDefault();
-
 
 	var key = String.fromCharCode(event.which);
 	console_state.insertChar(key);
-	
-	console.log(event.which);
-	console.log(String.fromCharCode(event.which));
 }
 function console_click(event) {
 	event.preventDefault();
-	console.log("clicked:" + event);
 
 	textarea.focus();
 	console_updatePosition();
@@ -127,17 +117,17 @@ function console_printError(text) {
 	console_print(text); // TODO maybe differenciate between stdout and stderr?
 }
 function console_printErrln(text) {
-	console_printError(text+"\n");
+	console_printError(text + "\n");
 }
 
 function console_print(text) {
-	textarea.val(textarea.val()+text);
+	textarea.val(textarea.val() + text);
 	// move cursor to end
 	console_position = textarea.val().length;
 	console_updatePosition();
 }
 function console_println(text) {
-	console_print(text+"\n");
+	console_print(text + "\n");
 }
 function console_updatePosition() {
 	textarea.caretTo(console_position);
@@ -149,7 +139,6 @@ function console_updatePosition() {
 
 function console_execute(cmd) {
 	var parts = cmd.split(" ");
-	console.log(commands[parts[0]]);
 	if (typeof commands[parts[0]] !== 'undefined') {
 		commands[parts[0]](parts);
 	} else {
@@ -176,8 +165,6 @@ function console_cmd_insertChar(key) {
 	console_cmd_position++;
 
 	console_insert(key);
-
-	console.log(console_cmd);
 }
 function console_cmd_Backspace() {
 	if (console_cmd_position > 0) {

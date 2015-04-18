@@ -6,11 +6,10 @@ Current goal:
 - create a working "file system"
 
 Next goals:
-
 - create multiple computers
 - create commands to communicate between computers
 - create programs and viruses/exploits to hack them
-- 
+- save the current progress in local storage
 
 Further Ideas:
 - irc/email to get tutorial infos

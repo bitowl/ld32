@@ -10,11 +10,19 @@ handled in a hash-map
 
 
 -- files:
+pwd
 cd
 ls
 cat
 tail
 less
+rm
+echo with pipe
+
+-- users:
+sudo
+su
+
 
 
 -- network:

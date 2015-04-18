@@ -18,7 +18,6 @@ var test = newFile(bitowl, "test");
 var zeugs = newDirectory(bitowl, "zeugs");
 var kekse = newFile(zeugs, "kekse");
 var ld32 = newDirectory(bitowl, "ld32");
-console.log("CURRENT: "+current_computer.pwd);
 
 // END TMP
 
