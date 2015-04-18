@@ -1,0 +1,11 @@
+console states:
+
+0: ENTER COMMAND
+	the console is ready for commands to be entered
+	you can only backspace to the beginning of the command
+
+1: WAIT FOR SOMETHING
+	no input can be entered while a command is executed
+
+2: TEXT EDIT (maybe some day)
+	if your in a text editor you have to be able to edit text
