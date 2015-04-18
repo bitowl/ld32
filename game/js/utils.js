@@ -123,7 +123,7 @@ function random(obj) {
     return x - Math.floor(x);
 }
 function randomInt(obj, intmax) {
-    return Math.floor(random(obj)*intmax);
+    return Math.floor(random(obj) * intmax);
 }
 function randomBool(obj) {
     return random(obj) <0.5;

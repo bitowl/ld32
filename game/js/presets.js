@@ -98,7 +98,9 @@ function setUpRandomPC(seed) {
 	}
 
 	// users
-	var userCount = Math.floor(Math.log2(randomInt(seed, 32)));
+	var userCount = 5-Math.floor(Math.log2(randomInt(seed, 31)+1));
+
+	console.log(userCount);
 	computer.users.push({
 		name: "root",
 		password: "notreallyhard",
@@ -140,8 +142,7 @@ function mergeFiles(folder, files) {
 }
 
 
-var seed = getRandom(2);
+var seed = getRandom(Math.random());
 setUpRandomPC(seed);
-
-console.log(internet);
+// console.log(internet);
 console.log(JSONE.stringify(internet).length);
