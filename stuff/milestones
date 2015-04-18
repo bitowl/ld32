@@ -8,12 +8,11 @@ Past goals:
 - place the programs you can use into real files
 
 Current goal:
-- create commands to communicate between computers
- - wget
- - scp
+- create programs and viruses/exploits to hack them
 
 Next goals:
-- create programs and viruses/exploits to hack them
+- create commands to communicate between computers
+ - wget
 - save the current progress in local storage
 - random computers in the network you can hack and take over
  - based on presets

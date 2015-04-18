@@ -32,7 +32,7 @@ function newFile(parent, name) {
 }
 
 // searches for a file in a directory
-function getFile(parent, name, noNeedToExist) { // TODO split at / (other function?)
+function getFile(parent, name) { // TODO split at / (other function?)
 	if (name.indexOf("/") === 0) {
 		return getFileByAbsolutePath(name);
 	} else if (name == "." || name == "") {
@@ -61,9 +61,12 @@ function getFile(parent, name, noNeedToExist) { // TODO split at / (other functi
 	}
 }
 
-function getFileByAbsolutePath(name) {
+function getFileByAbsolutePath(name, root) {
 	var parts = name.split("/");
-	var dir =  current_computer.root;
+	var dir = root;
+	if (typeof root == 'undefined') {
+		dir = current_computer.root;
+	}
 	for (var i = 1; i < parts.length; i++) {
 		dir = getFile(dir, parts[i]);	
 		if (dir == null) {

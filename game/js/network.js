@@ -74,12 +74,10 @@ var pc1 = {
 		],
 		ports: {
 			21:2
-		}
+		},
+		init:[],
 	};
 internet[1] = pc1;
-console.log(pc1.root);
-setUpDirectories(pc1.root);
-
 var ssh_stack = []; // stack of the previous ips we were connected to via ssh
 
 function getRandomIP(seed) {
@@ -98,7 +96,10 @@ function getHost(current_pc, ip) {
 }
 
 var portMeanings = {
-	21:  "21/tcp   open  ssh",
+	21:  "21/tcp   open  ftp",
+	22:  "22/tcp   open  ssh",
 	80:  "80/tcp   open  http",
+	389: "389/tcp  open  ldap",
 	443: "443/tcp  open  https",
+	636: "636/tcp  open  ldapssl"
 }

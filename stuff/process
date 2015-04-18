@@ -1,0 +1,8 @@
+process
+
+{
+	pid: 0,
+	name: "init",
+	interrupt: interrupt_func
+	kill: kill_func
+}

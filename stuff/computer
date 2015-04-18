@@ -1,0 +1,11 @@
+computer = {
+	hostname: "mylittlepc",
+	ip: "127.0.0.1",
+	pc: 0,					// programm counter
+	users: [],				// users
+	pwd: {},				// current directory
+	root: {},				// root directory
+	running: [],			// running processes
+	ports: {},				// open ports
+	init: [],				// programms started on start
+};

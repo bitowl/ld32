@@ -50,3 +50,14 @@ whois
 exit
 
 
+-- exploitable programs
+webserver
+mailserver
+databaseserver
+ftpserver
+ldapserver
+
+
+banking accounts
+
+service bealake start

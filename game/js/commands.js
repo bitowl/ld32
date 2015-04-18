@@ -97,8 +97,6 @@ function cmd_rm(param, flags) {
 						return;
 					}
 				}
-				// TODO if directory only remove if -r flag given
-				// TODO when deleting recursively test that the pwd is not in that path
 
 				// search file in parent
 				for (var j = 0; j < file.parent.files.length; j++) {
@@ -466,4 +464,12 @@ function cmd_scp(param) {
 			ssh_close(0);
 		}
 	);
+}
+
+function cmd_ps(param) {
+	for (var i = 0; i < current_computer.running.length; i++) {
+		console_println(current_computer.running[i].name+" "+current_computer.running[i].id);
+	}
+
+	console_finishedCommand();
 }
