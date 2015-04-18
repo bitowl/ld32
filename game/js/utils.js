@@ -122,8 +122,14 @@ function random(obj) {
     var x = Math.sin(obj.seed++) * 10000;
     return x - Math.floor(x);
 }
-function random(obj, intmax) {
+function randomInt(obj, intmax) {
     return Math.floor(random(obj)*intmax);
+}
+function randomBool(obj) {
+    return random(obj) <0.5;
+}
+function randomArr(obj, arr) {
+    return arr[Math.floor(random(obj)*arr.length)];
 }
 
 // http://stackoverflow.com/a/1473742

@@ -62,52 +62,52 @@ var current_computer = {
 					{
 						executable: true,
 						name:"ls",
-						cmd: cmd_ls
+						cmd: function(p,f) {cmd_ls(p,f);}
 					},
 					{
 						executable: true,
 						name: "pwd",
-						cmd: cmd_pwd
+						cmd: function(p,f) {cmd_pwd(p,f);}
 					},
 					{
 						executable: true,
 						name: "cat",
-						cmd: cmd_cat
+						cmd: function(p,f) {cmd_cat(p,f);}
 					},
 					{
 						executable: true,
 						name: "rm",
-						cmd: cmd_rm
+						cmd: function(p,f) {cmd_rm(p,f);}
 					},
 					{
 						executable: true,
 						name: "cd",
-						cmd: cmd_cd
+						cmd: function(p,f) {cmd_cd(p,f);}
 					},
 					{
 						executable: true,
 						name: "cp",
-						cmd: cmd_cp
+						cmd: function(p,f) {cmd_cp(p,f);}
 					},
 					{
 						executable: true,
 						name: "scp",
-						cmd: cmd_scp
+						cmd: function(p,f) {cmd_scp(p,f);}
 					},
 					{
 						executable: true,
 						name: "ssh",
-						cmd: cmd_ssh
+						cmd: function(p,f) {cmd_ssh(p,f);}
 					},
 					{
 						executable: true,
 						name: "ps",
-						cmd: cmd_ps
+						cmd: function(p,f) {cmd_ps(p,f);}
 					},
 					{
 						executable: true,
 						name: "nmap",
-						cmd: cmd_nmap
+						cmd: function(p,f) {cmd_nmap(p,f);}
 					},
 					{
 						executable: true,
@@ -239,19 +239,3 @@ function unbindPort(pc, pid, port) {
 boot(current_computer);
 boot(pc1);
 
-var jsonify=function(o){
-    var seen=[];
-    var jso=JSON.stringify(o, function(k,v){
-        if (typeof v =='object') {
-            if ( !seen.indexOf(v) ) { return '__cycle__'; }
-            seen.push(v);
-        } return v;
-    });
-    return jso;
-};
-
-
-
-
-
-// console.log(utf8_to_b64(JSONE.stringify(internet)).length);

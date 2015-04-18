@@ -93,9 +93,7 @@ var pc1 = {
 internet[1] = pc1;
 var ssh_stack = []; // stack of the previous ips we were connected to via ssh
 
-function getRandomIP(seed) {
-	return Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256);
-}
+
 
 
 function getHost(current_pc, ip) {
