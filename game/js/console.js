@@ -23,6 +23,18 @@ var console_state_wait = {
 	start: wait_nothing,
 	end: wait_nothing,
 };
+var console_pwd = "";
+var console_pwd_callback;
+var console_state_passwd = {
+	insertChar: console_pwd_insertChar,
+	backspace: console_pwd_Backspace,
+	del: wait_nothing,
+	enter: console_pwd_Enter,
+	left: wait_nothing,
+	right: wait_nothing,
+	start: wait_nothing,
+	end: wait_nothing,
+}
 
 var console_state = console_state_cmd;
 
@@ -219,4 +231,28 @@ function console_cmd_End() {
 
 function wait_nothing() {
 	// Karpardor setzt Platscher ein... Nicht passiert
+}
+
+
+// console state: PASSWORD
+function console_pwd_insertChar(key) {
+	console_pwd += key;
+}
+function console_pwd_Backspace() {
+	console_pwd = console_pwd.substring(0, console_pwd.length - 1);
+}
+
+function console_pwd_Enter() {
+	console_print(console_pwd + "\n");
+	console_state = console_state_wait;
+	console_pwd_callback(console_pwd);
+	console_pwd = "";
+}
+
+// set the console into the password entering state
+// calls the callback function when the password is entered
+function console_enterPassword(callback) {
+	console.log("set callback: " + callback);
+	console_pwd_callback = callback;
+	console_state = console_state_passwd;
 }

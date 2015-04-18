@@ -5,4 +5,11 @@ directory:
  - path
  - parent
  - containing files
- - size TODO
+ - size
+ - access rights
+
+file:
+ - name
+ - parent
+ - size
+ - access rights

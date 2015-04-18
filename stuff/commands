@@ -22,7 +22,13 @@ echo with pipe
 -- users:
 sudo
 su
+passwd
+w
+who
 
+-- processes:
+ps (aux)
+top / htop
 
 
 -- network:
@@ -32,5 +38,8 @@ ssh
 scp
 wget
 curl
+nmap
+hostname
+whois
 
 

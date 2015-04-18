@@ -7,5 +7,8 @@ console states:
 1: WAIT FOR SOMETHING
 	no input can be entered while a command is executed
 
-2: TEXT EDIT (maybe some day)
+2: ENTER PASSWORD
+	you can enter a password without it being displayed
+
+3: TEXT EDIT (maybe some day)
 	if your in a text editor you have to be able to edit text

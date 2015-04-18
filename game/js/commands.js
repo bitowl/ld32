@@ -6,6 +6,9 @@ var commands = {
 	sleep: cmd_sleep,
 	echo: cmd_echo,
 	rm: cmd_rm,
+	passwd: cmd_passwd,
+	rand: cmd_rand,
+	seed: cmd_seed,
 }
 function cmd_pwd(param) {
 	console_println(current_computer.pwd.path);
@@ -13,7 +16,8 @@ function cmd_pwd(param) {
 }
 function cmd_cd(param) {
 	if (param.length == 1) {
-		// TODO go home
+		current_computer.pwd = getFileByAbsolutePath(current_computer.current_user.home);
+		console_finishedCommand();
 	} else { // enter the directory first given
 		var dir = getFile(current_computer.pwd, param[1]);
 
@@ -102,3 +106,68 @@ function cmd_echo(param) {
 	console_finishedCommand();
 }
 
+
+
+
+function cmd_hostname(param) {
+	if (param.length == 1) {
+		console_println(current_computer.hostname);
+		console_finishedCommand();
+	} else {
+		// TODO check for root
+		current_computer.hostname = param[1];
+		console.console_finishedCommand();
+	}
+}
+function cmd_passwd(param) {
+	console_println("Changing password for " + current_computer.current_user.name);
+	console_print("(current) password: ");
+	console_enterPassword(function(passwd) {
+		console.log("callback called");
+		if (passwd == current_computer.current_user.password) {
+			console_print("Enter new password: ");
+			console_enterPassword(function(passwd) {
+				tmp = passwd;
+				console_print("Retype new password: ");		
+				console_enterPassword(function(passwd) {
+					if (tmp == passwd) {
+						current_computer.current_user.password = passwd;
+						tmp = null;
+						console_println("passwd: password updated successfully");
+						console_finishedCommand();
+					} else {
+						console_printErrln("Sorry, passwords do not match");
+						console_printErrln("passwd: password unchanged");
+						console_finishedCommand(1);
+					}
+				});
+			});
+		} else {
+			console_printErrln("passwd: Authentication failure");
+			console_printErrln("passwd: password unchanged");
+			console_finishedCommand(1);
+		}
+	});
+}
+
+
+
+
+var cmd_rand_seed = null;
+function cmd_rand(param) {
+	if (cmd_rand_seed == null) {
+		console_printErrln("rand: you have to initialize the randomness with seed");
+		console_finishedCommand(1);
+	}
+	console_println("your number: " + random(cmd_rand_seed));
+	console_finishedCommand();
+}
+function cmd_seed(param) {
+	var seed = parseInt(param[1]);
+	if (isNaN(seed)) {
+		seed = Math.random();
+	}
+	cmd_rand_seed = getRandom(seed);
+	console_println("initialized random with " + seed);
+	console_finishedCommand();
+}

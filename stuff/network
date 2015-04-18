@@ -1,0 +1,10 @@
+network
+
+most pcs reachable from the www with ipv4
+vulnerable to simple bruteforce password attacs
+
+later advanced hacking requires looking around in NATS of some government agencies
+
+computer:
+ - ip
+ - speed

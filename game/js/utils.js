@@ -1,3 +1,5 @@
+var tmp; // store anything in here. Don't expect it to be still here if something else h appense at the same time
+
 // http://stackoverflow.com/a/946556
 jQuery.fn.extend({
     insertAtCaret: function(myValue){
@@ -100,4 +102,23 @@ function removeBackspaces(str) {
 // http://stackoverflow.com/a/4364902
 function insertIntoString(a, b, position) {
      return [a.slice(0, position), b, a.slice(position)].join('');
+}
+
+// http://stackoverflow.com/a/646643
+String.prototype.startsWith = function (str){
+  return this.indexOf(str) === 0;
+};
+
+// http://stackoverflow.com/a/2548133
+String.prototype.endsWith = function(suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
+
+// http://stackoverflow.com/a/19303725
+function getRandom(seed) {
+    return {seed:seed};
+}
+function random(obj) {
+    var x = Math.sin(obj.seed++) * 10000;
+    return x - Math.floor(x);
 }

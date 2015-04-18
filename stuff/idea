@@ -10,3 +10,7 @@ You only got your pc and your keyboard, so you have to use the command line to S
 there is no dns because maybe atomar catastrophy
 still ipv4 to keep things simple
 buy viruses/malware/bruteforcers via irc/ftp/?
+
+-- hacking tools --
+password cracker: needs a certain time to crack a passwort for an open ssh/ftp/db/mail-server given the username
+virus: exploiting a certain flaw in a program
