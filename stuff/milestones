@@ -1,9 +1,12 @@
-First goal:
-Get a command line working where you can enter commands and print stuff
+Past goals:
+- get a command line working where you can enter commands and print stuff
+- parse and handle commands
+
+Current goal:
+- create a working "file system"
 
 Next goals:
-- get a working "file system"
-- parse commands
+
 - create multiple computers
 - create commands to communicate between computers
 - create programs and viruses/exploits to hack them

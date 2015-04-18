@@ -1,0 +1,8 @@
+filesystem
+
+directory:
+ - name
+ - path
+ - parent
+ - containing files
+ - size TODO

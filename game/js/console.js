@@ -4,15 +4,25 @@ var console_position = 0;
 
 var console_cmd_position = 0; // position relative to the command
 var console_state_cmd = {
-	insertChar: cmd_insertChar,
-	backspace: cmd_Backspace,
-	del: cmd_Del,
-	enter: cmd_Enter,
-	left: cmd_Left,
-	right: cmd_Right,
-	start: cmd_Start,
-	end: cmd_End
+	insertChar: console_cmd_insertChar,
+	backspace: console_cmd_Backspace,
+	del: console_cmd_Del,
+	enter: console_cmd_Enter,
+	left: console_cmd_Left,
+	right: console_cmd_Right,
+	start: console_cmd_Start,
+	end: console_cmd_End
 }
+var console_state_wait = {
+	insertChar: wait_nothing,
+	backspace: wait_nothing,
+	del: wait_nothing,
+	enter: wait_nothing,
+	left: wait_nothing,
+	right: wait_nothing,
+	start: wait_nothing,
+	end: wait_nothing,
+};
 
 var console_state = console_state_cmd;
 
@@ -113,11 +123,21 @@ function console_insert(key) {
 	console_updatePosition();
 }
 
+function console_printError(text) {
+	console_print(text); // TODO maybe differenciate between stdout and stderr?
+}
+function console_printErrln(text) {
+	console_printError(text+"\n");
+}
+
 function console_print(text) {
 	textarea.val(textarea.val()+text);
 	// move cursor to end
 	console_position = textarea.val().length;
 	console_updatePosition();
+}
+function console_println(text) {
+	console_print(text+"\n");
 }
 function console_updatePosition() {
 	textarea.caretTo(console_position);
@@ -126,8 +146,30 @@ function console_updatePosition() {
 }
 
 
+
+function console_execute(cmd) {
+	var parts = cmd.split(" ");
+	console.log(commands[parts[0]]);
+	if (typeof commands[parts[0]] !== 'undefined') {
+		commands[parts[0]](parts);
+	} else {
+		console_printError("mlsh: " + parts[0] + ": command not found\n");
+		console_finishedCommand(1);
+	}
+}
+function console_finishedCommand(retVal) {  // call this when a command has finished execution
+   	retVal = typeof retVal !== 'undefined' ? retVal : 0; // by default this execution was happy
+
+	console_cmd = "";
+	console_cmd_position = 0;
+	computer_printPS(current_computer);
+	console_state = console_state_cmd;
+}
+
+
+
 // console state: COMMAND
-function cmd_insertChar(key) {
+function console_cmd_insertChar(key) {
 	// enter a command
 	// TODO move cursor
 	console_cmd = insertIntoString(console_cmd, key, console_cmd_position);
@@ -137,7 +179,7 @@ function cmd_insertChar(key) {
 
 	console.log(console_cmd);
 }
-function cmd_Backspace() {
+function console_cmd_Backspace() {
 	if (console_cmd_position > 0) {
 		console_cmd = removeBackspaces(insertIntoString(console_cmd, "\b", console_cmd_position));
 		console_cmd_position--;
@@ -149,29 +191,26 @@ function cmd_Backspace() {
 	}
 }
 
-function cmd_Del() {
-	if (cmd_Right()) {
-		cmd_Backspace();
+function console_cmd_Del() {
+	if (console_cmd_Right()) {
+		console_cmd_Backspace();
 	}
 }
-function cmd_Enter() {
+function console_cmd_Enter() {
 	console_print("\n");
 
-	// TODO execute command
-	console_print("we have EXECUTED ur command: " + console_cmd+"\n\n");
-	console_cmd = "";
-	console_cmd_position = 0;
-
-	computer_printPS(current_computer);
+	console_state = console_state_wait; // ignore user input
+	
+	console_execute(console_cmd);
 }
-function cmd_Left() {
+function console_cmd_Left() {
 	if (console_cmd_position > 0) {
 		console_cmd_position--;
 		console_position--;
 		console_updatePosition();
 	}
 }
-function cmd_Right() {
+function console_cmd_Right() {
 	if (console_cmd_position < console_cmd.length) {
 		console_cmd_position++;
 		console_position++;
@@ -180,13 +219,17 @@ function cmd_Right() {
 	}
 	return false;
 }
-function cmd_Start() {
+function console_cmd_Start() {
 	console_position -= console_cmd_position;
 	console_cmd_position = 0;
 	console_updatePosition();
 }
-function cmd_End() {
+function console_cmd_End() {
 	console_position += console_cmd.length - console_cmd_position;
 	console_cmd_position = console_cmd.length;
 	console_updatePosition();
+}
+
+function wait_nothing() {
+	// Karpardor setzt Platscher ein... Nicht passiert
 }

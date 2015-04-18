@@ -1,0 +1,28 @@
+COMMANDS:
+
+a command consists of:
+ - name
+ - function
+
+handled in a hash-map
+
+
+
+
+-- files:
+cd
+ls
+cat
+tail
+less
+
+
+-- network:
+ping
+nc
+ssh
+scp
+wget
+curl
+
+
