@@ -4,14 +4,13 @@ Past goals:
 - create users with passwords
 - create multiple computers
 - create a working "file system" with contents
+- parse flags from other parameters
+- place the programs you can use into real files
 
 Current goal:
-- parse flags from other parameters
+- create commands to communicate between computers
 
 Next goals:
-
-- create commands to communicate between computers
- - place the programs you can use into real files?
 - create programs and viruses/exploits to hack them
 - check access rights for all commands
 - save the current progress in local storage
