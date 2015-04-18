@@ -3,3 +3,9 @@ stuff i should do sometimes later:
  - make 127.0.0.1 always your own pc
  - check access rights for files and folders
  - make Strg+C work to quit commands
+
+
+
+BUGS
+minor:
+ - when you go from a pc via ssh to the same pc, then switch the folder and then go back, we are still in the same folder

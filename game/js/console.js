@@ -149,31 +149,47 @@ function console_updatePosition() {
 
 function console_execute(cmd) {
 	var parts = cmd.split(" ");
-
+	var file;
 	if (parts[0].startsWith("./") || parts[0].startsWith("/")) {
 		// local file
-		var file = getFile(current_computer.pwd, parts[0]);
-		if (file == null) {
-			console_printErrln("mlsh: " + parts[0] + ": No such file or directory");
+		file = getFile(current_computer.pwd, parts[0]);
+	} else {
+		for (var i = 0; i < current_computer.current_user.path.length; i++) {
+			file = getFileByAbsolutePath(createPath(current_computer.current_user.path[i], parts[0]));
+			if (file != null) {
+				break; // we found it
+			}
+		};
+		
+	}
+	if (file == null) {
+		console_printErrln("mlsh: " + parts[0] + ": No such file or directory");
+		console_finishedCommand(1);
+	} else {
+		if (file.directory) {
+			console_printErrln("mlsh: " + parts[0] + ": Is a directory");
+			console_finishedCommand(1);
+		} else if (!file.executable) {
+			console_printErrln("mlsh: " + parts[0] + ": Permission denied");
 			console_finishedCommand(1);
 		} else {
-			if (file.directory) {
-				console_printErrln("mlsh: " + parts[0] + ": Is a directory");
-				console_finishedCommand(1);
-			} else if (!file.executable) {
-				console_printErrln("mlsh: " + parts[0] + ": Permission denied");
-				console_finishedCommand(1);
-			} else {
-				// THIS FILE REALLY IS AN EXECUTABLE \ö/
-				file.cmd(parts);
-			}
+			// THIS FILE REALLY IS AN EXECUTABLE \ö/
+
+			var params = Array(parts[0]);
+			var flags = Array();
+			for (var i = 1; i < parts.length; i++) {
+				if (parts[i].startsWith("-")) {
+					flags.push(parts[i].replace(/-/g,''));
+				} else {
+					params.push(parts[i]);
+				}
+			};
+			console.log("p: " + params+" f: "+flags);
+
+			file.cmd(params, flags);
 		}
-	} else if (typeof commands[parts[0]] !== 'undefined') {
-		commands[parts[0]](parts);
-	} else {
-		console_printErrln("mlsh: " + parts[0] + ": command not found");
-		console_finishedCommand(1);
 	}
+
 }
 function console_finishedCommand(retVal) {  // call this when a command has finished execution
    	retVal = typeof retVal !== 'undefined' ? retVal : 0; // by default this execution was happy

@@ -10,6 +10,7 @@ var current_computer = {
 			groups: [
 				"users", "sudoers"
 			],
+			path: ["/bin"],
 			home: "/home/bitowl"
 		},
 		{
@@ -18,6 +19,7 @@ var current_computer = {
 			password: "notreallyhard",
 			groups: [
 			],
+			path: ["/bin", "/sbin"],
 			home: "/root"
 		}
 	],
@@ -57,6 +59,21 @@ var current_computer = {
 						executable: true,
 						name: "cat",
 						cmd: cmd_cat
+					},
+					{
+						executable: true,
+						name: "rm",
+						cmd: cmd_rm
+					},
+					{
+						executable: true,
+						name: "cd",
+						cmd: cmd_cd
+					},
+					{
+						executable: true,
+						name: "cp",
+						cmd: cmd_cp
 					}
 				]
 			}

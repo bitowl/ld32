@@ -122,3 +122,11 @@ function random(obj) {
     var x = Math.sin(obj.seed++) * 10000;
     return x - Math.floor(x);
 }
+function random(obj, intmax) {
+    return Math.floor(random(obj)*intmax);
+}
+
+// http://stackoverflow.com/a/1473742
+function inArray(value, array) {
+    return $.inArray(value, array)!=-1;
+}

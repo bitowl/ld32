@@ -13,6 +13,7 @@ var pc1 = {
 				groups: [
 					"users", "sudoers"
 				],
+				path: ["/bin"],
 				home: "/home"
 			},
 			{
@@ -21,6 +22,7 @@ var pc1 = {
 				password: "toor",
 				groups: [
 				],
+				path: ["/bin"],
 				home: "/root"
 			}
 		],
@@ -85,14 +87,18 @@ function getRandomIP(seed) {
 }
 
 
-function getHost(ip) {
+function getHost(current_pc, ip) {
+	if (ip == "127.0.0.1") {
+		return current_pc;
+	}
 	if (typeof internet[ip]== 'undefined') {
-		console_printErrln("ping: unknown host " + ip);
 		return null;
 	}
 	return internet[ip];
 }
 
 var portMeanings = {
-	21: "21/tcp open  ssh"
+	21:  "21/tcp   open  ssh",
+	80:  "80/tcp   open  http",
+	443: "443/tcp  open  https",
 }

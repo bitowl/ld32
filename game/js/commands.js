@@ -1,19 +1,3 @@
-var commands = {
-	pwd: cmd_pwd,
-	cd: cmd_cd,
-	ls: cmd_ls,
-	dir: cmd_ls,
-	sleep: cmd_sleep,
-	echo: cmd_echo,
-	rm: cmd_rm,
-	passwd: cmd_passwd,
-	rand: cmd_rand,
-	seed: cmd_seed,
-	ping: cmd_ping,
-	ssh: cmd_ssh,
-	exit: cmd_exit,
-	nmap: cmd_nmap,
-}
 function cmd_pwd(param) {
 	console_println(current_computer.pwd.path);
 	console_finishedCommand();
@@ -41,22 +25,48 @@ function cmd_cd(param) {
 	console_finishedCommand();
 }
 function cmd_ls(param) {
-	var fileNames = Array();
-	var dir = current_computer.pwd; // TODO maybe there is a parameter 
+
+	if (param.length == 1) {
+		if (!list(current_computer.pwd)) {
+			return;
+		}
+	} else if (param.length == 2) {
+		if (!list(getFile(current_computer.pwd, param[1]))){
+			return;
+		}
+	} else {
+		for (var i = 1; i < param.length; i++) {
+			if (i != 1) {console_print("\n");}
+			console_println(param[i]+":");
+			if (!list(getFile(current_computer.pwd, param[i]))){
+				return;
+			}
+		};
+	}
+	
 	console.log(current_computer);
+	
+	console_finishedCommand();
+}
+function list(dir) {
+	if (dir == null) {
+		console_printErrln("ls: No such file or directory");
+		console_finishedCommand(1);
+		return false;
+	}
+	var fileNames = Array();	
 	for (var i = 0; i < dir.files.length; i++) {
 		fileNames.push(dir.files[i].name);
 	}
-	console.log(fileNames);
 	fileNames.sort();
-	console.log(fileNames);
 
 	for (var i = 0; i < fileNames.length; i++) {
 		console_println(fileNames[i]);
 	}
-	console_finishedCommand();
+	return true;
 }
-function cmd_rm(param) {
+
+function cmd_rm(param, flags) {
 	// TODO seperate into flags and arguments
 
 	if (param.length == 1) {
@@ -72,6 +82,21 @@ function cmd_rm(param) {
 				console_printErrln("rm: cannot remove '" + param[i] + "': No such file or directory");
 				retVal = 1;
 			} else {
+				if (file.directory) {
+					if (inArray("r", flags)) {
+						if (current_computer.pwd.path.startsWith(file.path)) {
+							console_printErrln("rm: cannot remove '" + current_computer.pwd.path + ': Directory currently in use');
+							console_finishedCommand(1);
+							return;
+						} else {
+
+						}
+					} else {
+						console_printErrln("rm: cannot remove '" + param[i] + ': Is a directory');
+						console_finishedCommand(1);
+						return;
+					}
+				}
 				// TODO if directory only remove if -r flag given
 				// TODO when deleting recursively test that the pwd is not in that path
 
@@ -179,7 +204,9 @@ function cmd_seed(param) {
 function cmd_ping(param) {
 	var ip = param[1]; // TODO check
 
-	if (typeof internet[ip] == 'undefined') {
+
+	var pc = getHost(current_computer, ip);
+	if (pc == null) {
 		console_printErrln("ping: unknown host " + ip);
 		console_finishedCommand();
 		return;
@@ -219,8 +246,9 @@ function cmd_ssh(param) {
 		host = parts[1];
 	}
 
-	if (typeof internet[host] == 'undefined') {
-		console_printErrln("ping: unknown host " + host);
+	var pc = getHost(current_computer, host);
+	if (pc == null) {
+		console_printErrln("ssh: unknown host " + host);
 		console_finishedCommand(1);
 		return;
 	}
@@ -228,7 +256,7 @@ function cmd_ssh(param) {
 	// TODO check if there is an ssh server running
 
 	console_print("Password: ");
-	console_enterPassword(function(passwd){ssh_callback(1, user, internet[host], passwd);});
+	console_enterPassword(function(passwd){ssh_callback(1, user, pc, passwd);});
 }
 
 function ssh_callback(tries, user, pc, passwd) {
@@ -287,7 +315,7 @@ function ssh_close(retVal) {
 
 
 function cmd_nmap(param) {
-	var host = getHost(param[1]);
+	var host = getHost(current_computer, param[1]);
 	if (host == null) {
 		console_finishedCommand(1);
 		return;
@@ -298,7 +326,7 @@ function cmd_nmap(param) {
 }
 function nmap_results(host) {
 	console_println("Nmap scan report for " + host.ip);
-	console_println("PORT   STATE SERVICE");
+	console_println("PORT     STATE SERVICE");
 	for (port in host.ports) {
 		console_println(portMeanings[port]);
 	}
@@ -327,4 +355,60 @@ function cmd_cat(param) {
 			console_finishedCommand();
 		}
 	}
+}
+
+function cmd_cp(param, flags) {
+	if (param.length == 1) {
+		console_printErrln("cp: missing file operand");
+		console_finishedCommand(1);
+	} else if (param.length == 2) {
+		console_printErrln("cp: missing destination file operand after '" + param[1] + "'");
+		console_finishedCommand(1);
+	} else {
+		var src = getFile(current_computer.pwd, param[1]);
+		if (src == null) {
+			console_printErrln("cp: " + param[1] + ": No such file or directory");
+			console_finishedCommand(1);
+		} else {
+			var dest = getFile(current_computer.pwd, param[2], true);
+			var name = "";
+			if (dest == null) {
+				var lio = param[2].lastIndexOf("/");
+				if (lio < 0) {
+					dest = current_computer.pwd;
+					name = param[2];
+				} else {
+					dest = getFile(current_computer.pwd, param[2].substring(0, lio), true);	
+					name = param[2].substring(lio + 1);
+				}
+				
+
+				if (dest == null) {
+					console_printErrln("cp: " + param[2] + ": No such file or directory");
+					console_finishedCommand(1);
+					return;
+				}
+			}
+			
+			if (src.directory) {
+				if (!inArray("r", flags)) {
+					console_printErrln("cp: omitting directory '" + param[1] + "'");
+					console_finishedCommand(1);
+					return;
+				}
+			}
+			copyFile(src, dest, name);
+			console_finishedCommand();
+		}
+	}
+}
+
+function copyFile(src, dest, name) {
+	var file = jQuery.extend({}, src);
+	file.parent = dest;
+	if (name != "") {
+		file.name = name;
+	}
+	file.path = createPath(dest.path, file.name);
+	dest.files.push(file);
 }
