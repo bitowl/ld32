@@ -21,6 +21,7 @@ function cmd_service(params, flag, process, pc) {
 			id: pc.pid++,
 			uid: 0,
 			name: params[2],
+			version: file.version,
 			kill: wait_nothing, // TODO service killing routine
 			interrupt: wait_nothing
 		}

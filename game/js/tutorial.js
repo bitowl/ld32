@@ -96,7 +96,7 @@ It contains the login credentials for a server we recently hacked.\n\
 Use ssh to connect to that computer. The command is ssh USER@IP \n\
 Once you are connected you can execute commands on that computer.\n\
 \n\
-Take a look around there and then use exit to come back to your pc.\n\
+Take a look around there and then use exit to come back to your pc. (If there is no exit installed on the remote server you can use Ctrl+D)\n\
 \n\
 MorpheusCat",function(){});
 		break;
@@ -113,6 +113,9 @@ sendMail(tutorial.user , tutorial.host, "Your first hack", "morpheuscat@"+tutori
 You downloaded your first password cracking tool. You can use it on a server with ssh running to crack the password of a given user, if it is really simple.\n\
 There are also some exploits. Those can hack into certain versions of services and sometimes can give you passwords, create users or start other exploitable services.\n\
 We are currently inventigating evil activities of Nosetablet Inc. Here is a list of servers you might want to take a look at:\n\
+"+tutorial.nosetablet1+"\n\
+"+tutorial.nosetablet2+"\n\
+"+tutorial.nosetablet3+"\n\
 \n\
 MorpheusCat",function(){});
 		break;

@@ -113,6 +113,10 @@ function cmd_rm(param, flags) {
 	}
 }
 function removeFile(file) {
+	if (file.parent == null) {
+		console_printErrln(file.path + " is corrupt and can not be deleted");
+		return;
+	}
 	for (var j = 0; j < file.parent.files.length; j++) {
 		if (file.parent.files[j] == file) {
 			file.parent.files.splice(j, 1);
@@ -327,6 +331,7 @@ function cmd_exit(param) {
 	}
 }
 function ssh_close(retVal) {
+	sendTrigger(TRIGGER_SSH_EXITED);
 	// jump back to the last pc we were on
 	var jumpTo = ssh_stack.pop();
 	console_println("Connection to " + current_computer.ip + " closed.");
@@ -349,13 +354,22 @@ function cmd_nmap(param, flags, process) {
 	}
 
 	console_println("Starting Nmap");
-	timeout = setTimeout(function(){nmap_results(host)}, 10 * getPing(current_computer, host)); // TODO depend on connection speed
+	timeout = setTimeout(function(){nmap_results(host, inArray("f",flags))}, (inArray("f",flags)?20:10) * getPing(current_computer, host)); // TODO depend on connection speed
 }
-function nmap_results(host) {
+function nmap_results(host, full) {
 	console_println("Nmap scan report for " + host.ip);
-	console_println("PORT     STATE SERVICE");
+	if (full) {
+		console_println("PORT     STATE SERVICE VERSION");
+	} else {
+		console_println("PORT     STATE SERVICE");
+	}
 	for (port in host.ports) {
-		console_println(portMeanings[port]);
+		if (full) {
+			var prog = host.running[host.ports[port]];
+			console_println(portMeanings[port] + " " + prog.version);
+		} else {
+			console_println(portMeanings[port]);
+		}
 	}
 	console_finishedCommand();
 }
@@ -407,7 +421,7 @@ function cmd_cp(param, flags) {
 			}
 			var dest = getFile(getPwd(current_computer), param[2], current_computer.root);
 			var name = "";
-			if (dest == null) {
+			if (dest == null || !dest.directory) {
 				var lio = param[2].lastIndexOf("/");
 				if (lio < 0) {
 					dest = getPwd(current_computer);
@@ -418,13 +432,14 @@ function cmd_cp(param, flags) {
 				}
 				
 
-				if (dest == null) {
+				if (dest == null || !dest.directory) {
 					console_printErrln("cp: " + param[2] + ": No such file or directory");
 					console_finishedCommand(1);
 					return;
 				}
 			}
 			
+			console.log(dest);
 
 			copyFile(src, dest, name);
 			console_finishedCommand();
@@ -464,7 +479,7 @@ function cmd_mv(param, flags) {
 			}
 			var dest = getFile(getPwd(current_computer), param[2], current_computer.root);
 			var name = "";
-			if (dest == null) {
+			if (dest == null|| !dest.directory) {
 				var lio = param[2].lastIndexOf("/");
 				if (lio < 0) {
 					dest = getPwd(current_computer);
@@ -475,7 +490,7 @@ function cmd_mv(param, flags) {
 				}
 				
 
-				if (dest == null) {
+				if (dest == null|| !dest.directory) {
 					console_printErrln("mv: " + param[2] + ": No such file or directory");
 					console_finishedCommand(1);
 					return;
@@ -549,7 +564,7 @@ function cmd_scp(param) {
 		function() {
 			var dest = getFile(getPwd(current_computer), parts[1],current_computer.root);
 			var name = "";
-			if (dest == null) {
+			if (dest == null|| !dest.directory) {
 				var lio = parts[1].lastIndexOf("/");
 				if (lio < 0) {
 					dest = getPwd(current_computer);
@@ -560,7 +575,7 @@ function cmd_scp(param) {
 				}
 				
 
-				if (dest == null) {
+				if (dest == null|| !dest.directory) {
 					console_printErrln("scp: " + parts[1] + ": No such file or directory");
 					console_finishedCommand(1);
 					return;
@@ -611,7 +626,15 @@ function cmd_mail(param) {
 	console_finishedCommand(0);
 }
 
-
+function cmd_pwstrength(param) {
+	if (param.length != 2) {
+		console_printErrln("pwstrength PASSWD");
+		console_finishedCommand(1);	
+		return;
+	}
+	console_println(getPasswordStrength(param[1]));
+	console_finishedCommand(0);
+}
 
 
 
@@ -634,4 +657,22 @@ function cmd_reset(param) {
 		}
 
 	});
+}
+
+
+function cmd_gameover() {
+	console_print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	console_println("You entered the realm of the great master.");
+	setTimeout(function() {
+		console_println("You thought with all your hacking experience there must be a way to fight him.");
+		setTimeout(function() {
+			console_println("You found out that MorpheusCat seemed to be behind all this");
+			setTimeout(function() {
+				console_println("But you would never find out his intentions.");
+				setTimeout(function() {								
+					console_println("The moment you started thinking about it, your screen froze.");
+				}, 4000);
+			}, 2000);
+		}, 2000);
+	}, 2000);
 }

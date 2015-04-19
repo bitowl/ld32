@@ -9,6 +9,27 @@ var accounts = {
 	}
 };
 
+function getRandAccNumber(seed) {
+	var number = Math.floor(random(seed) * 9999999);
+	while (accounts[number] != null) {
+		number = Math.floor(random(seed) * 9999999);
+	} 
+	return number;
+}
+
+function getRandBankAccount(seed, balance) {
+	var number = getRandAccNumber(seed);
+	var pin = Math.floor(random(seed)*9999);
+	accounts[number] = {
+		pin: pin,
+		balance: balance
+	};
+	return {
+		number: number,
+		pin: pin
+	};
+}
+
 function cmd_bank(params) {
 	if (params.length == 1) {
 		console_println("bank accounting tool");
@@ -56,7 +77,7 @@ function cmd_bank(params) {
 		console_print("PIN: ");
 		console_enterPassword(function(pin) {
 			if (accounts[params[2]]!= null && pin == accounts[params[2]].pin) {
-				console_println("balance: " + accounts[params[2]].balance);
+				console_println("balance: " + accounts[params[2]].balance.toFixed(2));
 				console_finishedCommand(0);
 			} else {
 				console_printErrln("bank: access denied");
@@ -110,11 +131,12 @@ var shop = {
 		]
 	},
 	ssh_service: {
-		desc: "ssh server service",
+		desc: "ssh server service v7",
 		price: 100,
 		files:[
 			{
 				name: "ssh",
+				version: 7,
 				cmd: svc_ssh,
 			},
 			{
@@ -151,6 +173,38 @@ var shop = {
 			executable: true,
 			cmd: function(p) {readRootPw(p, "bealake", 0, 2, 0);}
 		}]
+	},
+	web_dg: {
+		desc: "downgrades bealake >16 <19 to 2",
+		price: 400,
+		files: [
+		{
+			name: "bealakeGradeItDown",
+			executable: true,
+			cmd: function(p) {downGrade(p, "bealake",16,19,1000, 2);}
+		}]
+	},
+	bank_account: {
+		desc: "random cracked bank account (no guaranteed balance)",
+		price: 1000,
+		cmd: function() {
+			var acc = getRandBankAccount(getRandom(Math.random()), Math.random()*9999);
+			console_println("account nr: " + acc.number);
+			console_println("pin:        " + acc.pin);
+		}
+	},
+	pw_cracker:{
+		desc: "simple password cracker for password up to a strength of 15",
+		price: 100,
+		files: [
+		{
+			name: "pwcracker",
+			executable: true,
+			cmd: function(p) {
+				pwCracker(p, "ssh", 0,7, 1000, 15);
+			}
+		}
+		]
 	}
 
 }
@@ -240,23 +294,36 @@ function cmd_eshop(params) {
 					accounts[params[2]].balance -= total;
 					console_println("shopping successfull");
 					console_println("the requested files are being download to the eshop folder in your home folder");
-
-					// download files
-					var folder = getFileByAbsolutePath(createPath(current_computer.current_user.home, "eshop"), current_computer.root);
-					if (folder == null) {
-						folder = newDirectory(getFileByAbsolutePath(current_computer.current_user.home, current_computer.root), "eshop", current_computer.current_user.id);
-					}
-
 					for (product in cart) {
-						for (var i = 0; i < shop[product].files.length; i++) {
-							var prog = shop[product].files[i];
-							prog.prent = folder;
-							prog.path = createPath(folder.path, prog.name);
-							folder.files.push(prog);
-						};
-						
-					}
 					
+
+						// download files
+						var folder = getFileByAbsolutePath(createPath(current_computer.current_user.home, "eshop"), current_computer.root);
+						if (folder == null) {
+							folder = newDirectory(getFileByAbsolutePath(current_computer.current_user.home, current_computer.root), "eshop", current_computer.current_user.id);
+						}
+
+						for (product in cart) {
+
+							if (product == "pw_cracker") {
+								sendTrigger(TRIGGER_VIRUS_BOUGHT);
+							}
+
+							if (shop[product].files != null) {
+								for (var i = 0; i < shop[product].files.length; i++) {
+									var prog = shop[product].files[i];
+									prog.parent = folder;
+									prog.path = createPath(folder.path, prog.name);
+									folder.files.push(prog);
+								}
+							} else {
+								// Execute command
+								shop[product].cmd();		
+							}
+							
+						}	
+					}
+						
 
 					console_finishedCommand(0);
 				} else {

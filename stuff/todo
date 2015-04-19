@@ -12,3 +12,4 @@ minor:
  - filenames cannot consist only of numbers
 major:
  - remove save command directly from process stack (else it will still be there when the save is loaded)
+ - downloading the same files twice results in two files

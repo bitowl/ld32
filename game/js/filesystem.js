@@ -9,8 +9,8 @@ function newDirectory(parent, name, owner) {
 		name: name,
 		path: createPath(parent.path, name),
 		parent: parent,
-		owner: owner,
-		rights: parseInt(111101101,2),
+		// owner: owner,
+		//rights: parseInt(111101101,2),
 		files: []
 	}
 	parent.files.push(dir);
@@ -23,8 +23,8 @@ function newFile(parent, name) {
 		name: name,
 		path: createPath(parent.path, name),
 		parent: parent,
-		owner: current_computer.current_user.name,
-		rights: parseInt(111100100,2),
+		// owner: current_computer.current_user.name,
+		// rights: parseInt(111100100,2),
 	}
 	parent.files.push(file);
 	return file;
@@ -46,9 +46,12 @@ function getFile(parent, name, root) { // TODO split at / (other function?)
 		//console.log("return " + dir.path);
 		return dir;
 	} else {
-		//console.log("FIND FILE: ");
-		//console.log(parent);
+		console.log("FIND FILE: ");
+		console.log(parent);
 		if (name.indexOf("/") < 0) {
+			if (!parent.directory) {
+				return null;
+			}
 			// the file should be in this folder
 			//console.log("length:"+parent.files.length);
 			for (var i = 0; i < parent.files.length; i++) {
@@ -86,6 +89,7 @@ function getFileByAbsolutePath(name, root) {
 }
 
 function createPath(dir, name) {
+	console.log(dir+" "+name);
 	if (dir.endsWith("/")) {
 		return dir + name;
 	} else {

@@ -5,6 +5,8 @@ var usernames = ["peter", "www-data", "marc", "jens", "stefan", "student", "teac
 
 var hostnames = ["web", "floorbox", "glados", "athen", "rom", "spartha", "alexandria", "pc", "netbook-2432", "netbook-6372", "netbook-6734", "hackcenter", "kitchen-server", "production", "deployment", "development", "testing", "home", "www", "database", "cookiecracker"];
 
+var account_details = ["bank.txt", "account.txt", "bankaccount", "accdetails.txt", "nothing"];
+
 var busybox = [
 {
 	executable: true,
@@ -61,6 +63,11 @@ var busybox = [
 	name: "service",
 	cmd: function(p,f,o,c) {cmd_service(p,f,o,c);}
 },
+{executable:true,
+name: "pwstrength",
+cmd: function(p) {
+	cmd_pwstrength(p);
+}},
 
 
 // 4th wall breaking things
@@ -178,6 +185,12 @@ function setUpRandomPC(seed, ip) {
 		files:[] 
 	};
 	bin.files.push(svc);
+	var home = {
+		directory:true,
+		name: "home",
+		files:[]
+	}
+	computer.root.files.push(home);
 
 	mergeFiles(bin, busybox);
 	if (randomBool(seed)) {
@@ -206,14 +219,28 @@ function setUpRandomPC(seed, ip) {
 			admin = randomBool(seed);
 		}
 		// TODO check for double usernames
+		var name  = admin?randomArr(seed, admin_usernames):randomArr(seed, usernames);
 		computer.users.push({
-		name: admin?randomArr(seed, admin_usernames):randomArr(seed, usernames),
-		password: generateRandomPassword(seed),
-		groups: [
-		],
-		path: ["/bin", "/sbin"],
-		home: "/"
-	});
+			name: name,
+			password: generateRandomPassword(seed),
+			groups: [
+			],
+			path: ["/bin", "/sbin"],
+			home: "/home/"+name
+		});
+		var hm = {
+			directory: true,
+			name: name,
+			files: []
+		}
+		home.push(hm);
+		if (random(seed)<0.2) { // 20% have an own bank account
+			var acc = getRandBankAccount(seed, random(seed)*999);
+			hm.push({
+				name: randomArr(seed,account_details),
+				content: "number: " + acc.number+"\npin: "+acc.ping,
+			});
+		}
 	};
 
 
@@ -248,22 +275,42 @@ function getRandomIP(seed) {
 	return ip;
 }
 
+SMALL = "abcdefghijklnopqrstuvwxyz";
+BIG = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+NUMBER = "0123456789";
+SPECIAL = " !§$%&/()=?#-.,_+";
 function generateRandomPassword(seed) {
 	var length = randomInt(seed, 20);
 	var passwd = "";
 	for (var i = 0; i < length; i++) {
 		var rand = random(seed);
 		if (rand < 0.6) {  // 60% small letters
-			passwd += randomStr(seed, "abcdefghijklnopqrstuvwxyz");
+			passwd += randomStr(seed, SMALL);
 		} else if (rand < 0.8) { // 20% BIG LETTers
-			passwd += randomStr(seed, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			passwd += randomStr(seed, BIG);
 		} else if (rand < 0.95) { // 15% numbers
-			passwd += randomStr(seed, "0123456789");
+			passwd += randomStr(seed, NUMBER);
 		} else { // 5% special characters
-			passwd += randomStr(seed, " !§$%&/()=?#-.,_+");
+			passwd += randomStr(seed, SPECIAL);
 		}
 	};
 	return passwd;
+}
+
+function getPasswordStrength(passwd) {
+	var strength = 0;
+	for (var i = 0; i < passwd.length; i++) {
+		if (SMALL.indexOf(passwd[i])>-1) {
+			strength += 0.8;
+		} else if (BIG.indexOf(passwd[i])>-1) {
+			strength += 1;
+		} else if (NUMBER.indexOf(passwd[i])>-1) {
+			strength +=1.5;
+		} else {
+			strength +=2;
+		}
+	}
+	return Math.floor(strength);
 }
 
 function mergeFiles(folder, files) {
@@ -341,7 +388,24 @@ function generatePC(seed, config) {
 	// generate folders
 	for (var i = 0; i < config.folders.length; i++) {
 		genFolder(computer.root, config.folders[i]);
-	};
+	}
+
+	setUpDirectories(computer.root);
+
+	for (var i = 0; i < config.files.length; i++) {
+		var dir = getFileByAbsolutePath(config.files[i].path.substring(0, config.files[i].path.lastIndexOf("/")), computer.root);
+		if (dir == null) {
+			console.log("file "+config.files[i]+" COULD NOT BE PLACED :/");
+			continue;
+		}
+		console.log("ASDFASDF");
+		console.log(dir);
+		var file = newFile(dir, config.files[i].path.substring(config.files[i].path.lastIndexOf("/")+1));
+		file.content = config.files[i].content;
+		file.executable = config.files[i].executable;
+		file.cmd = config.files[i].cmd;
+
+	}
 
 	for (service in config.services) {
 		console.log("set up service "+service);
@@ -439,7 +503,7 @@ var srvc = {
 	// users
 	computer.users.push({
 		name: "root",
-		password: "notreallyhard",
+		password: "",
 		groups: [
 		],
 		path: ["/bin", "/sbin"],
@@ -461,6 +525,8 @@ var srvc = {
 	};
 	computer.root.files.push(home);
 
+	var acc = getRandBankAccount(seed, 500); // 500 cross start dollarz
+
 	var own = {
 		directory: true,
 		name: user,
@@ -475,7 +541,7 @@ var srvc = {
 			files:[
 				{
 					name:"bankaccount.txt",
-					content: "id: 12345 pin: 123"
+					content: "id: "+acc.number+"\npin: "+acc.pin
 				}
 			]
 		}
