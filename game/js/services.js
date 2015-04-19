@@ -109,7 +109,7 @@ function svc_ssh(pc, process, start) {
 }
 function svc_mail(pc, process, start) {
 	if (start) {
-		process.mail = function(u,s,f,c,a) {real_sendMail(pc,u,s,f,c,a);}
+		process.mail = function(pc, u,s,f,c,a) {real_sendMail(pc, u,s,f,c,a);}
 		return bindPort(pc, process.id, 25) && bindPort(pc, process.id, 110) && bindPort(pc, process.id, 143);
 	} else {
 		unbindPort(pc, process.id, 25);
@@ -118,7 +118,8 @@ function svc_mail(pc, process, start) {
 	}
 }
 
-function real_sendMail(pc,user, subject, from, content, callback)  {
+function real_sendMail(pc, user, subject, from, content, callback)  {
+	console.log(pc);
 			for (var i = 0; i < pc.users.length; i++) {
 				console.log(pc.users[i]);
 				if(pc.users[i].name == user) {
@@ -157,7 +158,7 @@ function sendMail(user, host, subject, from, content, callback) {
 	var pc = internet[host];
 	if (pc.ports[25] != null) {
 		setTimeout(function() {
-			pc.running[pc.ports[25]].mail(user, subject, from, content, callback);
+			pc.running[pc.ports[25]].mail(pc, user, subject, from, content, callback);
 		}, getPing(current_computer.ping, 100) * 200);
 	} else {
 		callback("no Mailserver found");

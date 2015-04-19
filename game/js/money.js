@@ -122,7 +122,37 @@ var shop = {
 				content: "place ssh file in /bin/services"
 			}
 		]
+	}, 
+	better_internet: {
+		desc: "better internet connection",
+		price: 1000,
+		cmd: function() {
+			current_computer.ping -= 100;
+		}
+	},
+	ftp_root:{
+		desc: "ftp root <3",
+		price: 300,
+		files: [
+			{
+				name: "ftpH4xx0r",
+				executable: true,
+				cmd: function(p) {readRootPw(p, "ftp", 0, 3, 2000);}
+			}
+		]
+
+	},
+	web_root: {
+		desc: "root via bealake version <2 (very old)",
+		price: 200,
+		files: [
+		{
+			name: "bealakeRoot",
+			executable: true,
+			cmd: function(p) {readRootPw(p, "bealake", 0, 2, 0);}
+		}]
 	}
+
 }
 
 var cart = {};

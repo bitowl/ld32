@@ -5,6 +5,7 @@ function createWorld() {
 	// MorpheusCat
 	var config = {
 		hostname: "overlord",
+		ping: 0,
 		users: [{
 			name: "morpheuscat",
 			password: "",

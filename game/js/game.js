@@ -34,6 +34,7 @@ function setUp() {
 
 
 function startFirstGame() {
+	createWorld();
 	console_print("Username: ");
 	console_enterText(function(username) {
 		console_print("Password: ");

@@ -278,6 +278,11 @@ function ssh_connect(user, host, afterConnect) {
 }
 
 function ssh_callback(tries, user, pc, passwd, afterConnect) {
+	if (passwd == null) {
+		// canceled
+		console_finishedCommand(1);
+		return;
+	}
 	for (var i = 0; i < pc.users.length; i++) {
 		if (pc.users[i].name == user) {
 			if (pc.users[i].password == passwd) {
@@ -329,8 +334,8 @@ function ssh_close(retVal) {
 	console_finishedCommand(retVal);	
 }
 
-
-function cmd_nmap(param) {
+var timeout;
+function cmd_nmap(param, flags, process) {
 	var host = getHost(current_computer, param[1]);
 	if (host == null) {
 		console_printErrln("nmap: unknown host "+ param[1]);
@@ -338,8 +343,13 @@ function cmd_nmap(param) {
 		return;
 	}
 
+	process.interrupt = function() {
+		clearTimeout(timeout);
+		console_finishedCommand(1);
+	}
+
 	console_println("Starting Nmap");
-	setTimeout(function(){nmap_results(host)}, 10 * getPing(current_computer, host)); // TODO depend on connection speed
+	timeout = setTimeout(function(){nmap_results(host)}, 10 * getPing(current_computer, host)); // TODO depend on connection speed
 }
 function nmap_results(host) {
 	console_println("Nmap scan report for " + host.ip);

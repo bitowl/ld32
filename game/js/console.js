@@ -13,6 +13,8 @@ var console_state_cmd = {
 	start: console_cmd_Start,
 	end: console_cmd_End,
 	complete: console_cmd_Complete,
+	cancel: console_cmd_Cancel,
+	interrupt: console_cmd_Interrupt,
 }
 var console_state_wait = {
 	insertChar: wait_nothing,
@@ -24,6 +26,8 @@ var console_state_wait = {
 	start: wait_nothing,
 	end: wait_nothing,
 	complete: wait_nothing,
+	cancel: console_com_Cancel,
+	interrupt: wait_nothing,
 };
 var console_pwd = "";
 var console_pwd_callback;
@@ -37,6 +41,8 @@ var console_state_passwd = {
 	start: wait_nothing,
 	end: wait_nothing,
 	complete: wait_nothing,
+	cancel: console_pwd_Cancel,
+	interrupt: wait_nothing,
 }
 
 var console_txt = "";
@@ -51,6 +57,8 @@ var console_state_text = {
 	start: wait_nothing,
 	end: wait_nothing,
 	complete: wait_nothing,
+	cancel: console_txt_Cancel,
+	interrupt: wait_nothing,
 }
 
 var console_state = console_state_cmd;
@@ -59,6 +67,7 @@ function console_setUp() {
 	textarea = $("#console");
 	$(document).on('keypress', console_keyPressed);
 	$(document).on('keydown', console_keyDown);
+	$(document).on('keyup', console_keyUp);
 	$(document).click(console_click);
 	$(document).focus(console_click);
 	textarea.click(console_click);
@@ -71,7 +80,9 @@ function console_setUp() {
 	textarea.val("");
 }
 
+var console_cmdPressed;
 function console_keyDown(event) {
+	console.log(event.which);
 	switch(event.which) {
 		case 9: // tab
 		case 37: // left
@@ -79,6 +90,7 @@ function console_keyDown(event) {
 		case 38: // up
 		case 40: // down
 		case 13: // enter
+		case 17: // cmd
 		case 36: // start
 		case 35: // end
 		case 33: // page up
@@ -94,6 +106,9 @@ function console_keyDown(event) {
 		case 13: // enter
 			console_state.enter();
 			break;
+		case 17: // cmd
+			console_cmdPressed = true;
+			break;
 		case 37: // left
 			console_state.left();
 			break;
@@ -108,6 +123,13 @@ function console_keyDown(event) {
 			break;
 		case 46: // delete
 			console_state.del();
+			break;
+	}
+}
+function console_keyUp(event) {
+	switch(event.which) {
+		case 17: // cmd
+			console_cmdPressed = false;
 			break;
 	}
 }
@@ -129,7 +151,16 @@ function console_keyPressed(event) {
 	event.preventDefault();
 
 	var key = String.fromCharCode(event.which);
-	console_state.insertChar(key);
+
+	if (console_cmdPressed) {
+		if (key == "c") {
+			console_state.cancel();
+		} else if (key == "d") {
+			console_state.interrupt();
+		}
+	} else {
+		console_state.insertChar(key);
+	}
 }
 function console_click(event) {
 	event.preventDefault();
@@ -182,6 +213,10 @@ function console_finishedCommand(retVal) {  // call this when a command has fini
 
 
 
+function console_com_Cancel() { // cancel a running command
+	current_computer.running[current_computer.current_user.fgPid].interrupt();
+}
+
 // console state: COMMAND
 function console_cmd_insertChar(key) {
 	// enter a command
@@ -214,6 +249,16 @@ function console_cmd_Enter() {
 	console_state = console_state_wait; // ignore user input
 	
 	console_execute(console_cmd);
+}
+function console_cmd_Cancel() {
+	console_print("^C\n");
+	computer_printPS(current_computer);
+	console_cmd = "";
+	console_cmd_position = 0;
+}
+function console_cmd_Interrupt() {
+	console_print("\n");
+	cmd_exit();
 }
 function console_cmd_Left() {
 	if (console_cmd_position > 0) {
@@ -295,6 +340,12 @@ function console_pwd_Enter() {
 	console_pwd_callback(console_pwd);
 	console_pwd = "";
 }
+function console_pwd_Cancel() {
+	console_print("\n");
+	console_state = console_state_wait;
+	console_pwd_callback(null); // null for cancel
+	console_pwd = "";
+}
 
 // set the console into the password entering state
 // calls the callback function when the password is entered
@@ -323,6 +374,11 @@ function console_txt_Enter() {
 	console_state = console_state_wait;
 	console_txt_callback(console_txt);
 	console_txt = "";
+}
+
+function console_txt_Cancel() {
+	console_txt ="";
+	console_txt_Enter();
 }
 
 function console_enterText(callback) {

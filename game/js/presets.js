@@ -82,7 +82,7 @@ var internet_tools = [
 {
 	executable: true,
 	name: "nmap",
-	cmd: function(p,f) {cmd_nmap(p,f);}
+	cmd: function(p,f,c) {cmd_nmap(p,f,c);}
 },
 {
 	executable: true,
@@ -102,7 +102,7 @@ var internet_tools = [
 {
 	executable:true,
 	name: "ping",
-	cmd: function(p,f) {cmd_ping(p,f);}
+	cmd: function(p,f,c) {cmd_ping(p,f,c);}
 },
 {
 	executable:true,
