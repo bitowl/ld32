@@ -142,7 +142,7 @@ function mergeFiles(folder, files) {
 }
 
 
-var seed = getRandom(Math.random());
-setUpRandomPC(seed);
+// var seed = getRandom(Math.random());
+// setUpRandomPC(seed);
 // console.log(internet);
-console.log(JSONE.stringify(internet).length);
+// console.log(JSONE.stringify(internet).length);

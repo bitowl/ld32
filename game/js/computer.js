@@ -115,6 +115,11 @@ var current_computer = {
 						cmd: cmd_service
 					},
 					{
+						executable: true,
+						name: "save",
+						cmd: cmd_save
+					},
+					{
 						directory: true,
 						name: "services",
 						files: [
@@ -133,7 +138,7 @@ var current_computer = {
 	ports: {}
 };
 current_computer.current_user = current_computer.users[0];
-current_computer.pwd = current_computer.root.files[0].files[0];
+current_computer.pwd = "/home/bitowl";//current_computer.root.files[0].files[0].path;
 
 
 internet["127.0.0.1"] = current_computer;
@@ -157,10 +162,10 @@ function boot(pc) {
 
 function computer_printPS(pc) {
 	console_print(pc.current_user.name + "@" + pc.hostname + ":");
-	if (pc.pwd.path == pc.current_user.home) {
+	if (pc.pwd == pc.current_user.home) {
 		console_print("~");
 	} else {
-		console_print(pc.pwd.name); // current dir	
+		console_print(getPwd(pc).name); // current dir	
 	}
 	
 	console_print("$ ");
@@ -168,13 +173,19 @@ function computer_printPS(pc) {
 
 function computer_exec(pc, uid, cmd ,fg) {
 	var parts = cmd.split(" ");
+
+	if (parts[0] == "") {
+		console_finishedCommand();
+		return;
+	}
+
 	var file;
 	if (parts[0].indexOf("/") > -1) {
 		// local file
-		file = getFile(pc.pwd, parts[0]);
+		file = getFile(getPwd(pc), parts[0], pc.root);
 	} else {
 		for (var i = 0; i < pc.current_user.path.length; i++) {
-			file = getFileByAbsolutePath(createPath(pc.current_user.path[i], parts[0]));
+			file = getFileByAbsolutePath(createPath(pc.current_user.path[i], parts[0]),pc.root);
 			if (file != null) {
 				break; // we found it
 			}
@@ -221,6 +232,13 @@ function computer_exec(pc, uid, cmd ,fg) {
 		}
 	}
 
+}
+
+function getPwd(pc) {
+	console.log("get pwd for " + pc.ip);
+	var pwd= getFileByAbsolutePath(pc.pwd, pc.root);
+	console.log("pwd: "+pwd.path);
+	return pwd;
 }
 
 function bindPort(pc, pid, port) {

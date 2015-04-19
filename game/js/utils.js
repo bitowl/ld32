@@ -240,13 +240,17 @@ JSONE.from.addCycle = function(obj,paths = [],already = [],path="PATH#obj")
             return obj;
         }
     }
+
+
     for(var i in paths)
     {
         if(paths[i].path===obj)
         {
             obj = paths[i].obj;
+            break;
         }
     }
+
     for(var i in already)
     {
         if(already[i]===obj)
@@ -254,6 +258,8 @@ JSONE.from.addCycle = function(obj,paths = [],already = [],path="PATH#obj")
             return obj;
         }
     }
+   // console.log("path: "+path);
+
     paths.push({path:path,obj:obj});
     already.push(obj);
     
@@ -266,12 +272,22 @@ JSONE.from.addCycle = function(obj,paths = [],already = [],path="PATH#obj")
 JSONE.parse = function(txt)
 {
     var obj = JSON.parse(txt);
+
+    // console.log(obj);
+
     if(typeof obj === "object")
     {
-        for(var i in JSONE.from)
+        /*for(var i in JSONE.from)
         {
             obj = JSONE.from[i](obj);
-        }
+        }*/
+        obj = JSONE.from["addFuncs"](obj);
+
+        // search twice, so that the order of things in the cyclic object is not important
+        var paths=[];
+        obj = JSONE.from["addCycle"](obj,paths);
+        obj = JSONE.from["addCycle"](obj,paths);
+        obj = JSONE.from["addCycle"](obj,paths);
     }
     return obj;
 }
@@ -279,6 +295,9 @@ JSONE.parse = function(txt)
 //Funktion, die auch Objekte klont, die sich selbst enthalten
 function clone(obj,already = [])
 {
+    
+
+
     if(typeof obj === "object")
     {
         for(var i in already)
@@ -290,6 +309,9 @@ function clone(obj,already = [])
         }
     
         var cl = {};
+        if( Object.prototype.toString.call( obj ) === '[object Array]' ) {
+            cl =[]; // it's an array
+        }
         already.push({obj:obj,cl:cl});
         for(var i in obj)
         {
@@ -299,3 +321,5 @@ function clone(obj,already = [])
     }
     return obj;
 }
+
+

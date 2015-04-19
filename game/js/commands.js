@@ -1,13 +1,13 @@
 function cmd_pwd(param) {
-	console_println(current_computer.pwd.path);
+	console_println(current_computer.pwd);
 	console_finishedCommand();
 }
 function cmd_cd(param) {
 	if (param.length == 1) {
-		current_computer.pwd = getFileByAbsolutePath(current_computer.current_user.home);
+		current_computer.pwd = current_computer.current_user.home;
 		console_finishedCommand();
 	} else { // enter the directory first given
-		var dir = getFile(current_computer.pwd, param[1]);
+		var dir = getFile(getPwd(current_computer), param[1], current_computer.root);
 
 		if (dir == null) {
 			console_printErrln("cd: " + param[1] + ": No such file or directory");
@@ -18,7 +18,8 @@ function cmd_cd(param) {
 			console_finishedCommand(1);
 			return;
 		} else {
-			current_computer.pwd = dir;
+			console.log("SET PWD: "+dir.path);
+			current_computer.pwd = dir.path;
 		}
 	}
 
@@ -27,18 +28,18 @@ function cmd_cd(param) {
 function cmd_ls(param) {
 
 	if (param.length == 1) {
-		if (!list(current_computer.pwd)) {
+		if (!list(getPwd(current_computer))) {
 			return;
 		}
 	} else if (param.length == 2) {
-		if (!list(getFile(current_computer.pwd, param[1]))){
+		if (!list(getFile(getPwd(current_computer), param[1],current_computer.root))){
 			return;
 		}
 	} else {
 		for (var i = 1; i < param.length; i++) {
 			if (i != 1) {console_print("\n");}
 			console_println(param[i]+":");
-			if (!list(getFile(current_computer.pwd, param[i]))){
+			if (!list(getFile(getPwd(current_computer), param[i],current_computer.root))){
 				return;
 			}
 		};
@@ -76,7 +77,7 @@ function cmd_rm(param, flags) {
 		var retVal = 0;
 		for (var i = 1; i < param.length; i++) {
 
-			var file = getFile(current_computer.pwd, param[i]);
+			var file = getFile(getPwd(current_computer), param[i],current_computer.root);
 			console.log("delete: "+file+" "+param[i]+" "+i);
 			if (file == null) {
 				console_printErrln("rm: cannot remove '" + param[i] + "': No such file or directory");
@@ -84,7 +85,7 @@ function cmd_rm(param, flags) {
 			} else {
 				if (file.directory) {
 					if (inArray("r", flags)) {
-						if (current_computer.pwd.path.startsWith(file.path)) {
+						if (current_computer.pwd.startsWith(file.path)) {
 							console_printErrln("rm: cannot remove '" + current_computer.pwd.path + ': Directory currently in use');
 							console_finishedCommand(1);
 							return;
@@ -275,8 +276,8 @@ function ssh_callback(tries, user, pc, passwd, afterConnect) {
 				// correct password				
 				current_computer = pc;
 				current_computer.current_user = pc.users[i];
-				current_computer.pwd = getFileByAbsolutePath(pc.users[i].home);
-				if (current_computer.pwd == null) {
+				current_computer.pwd = pc.users[i].home;
+				if (current_computer.pwd == null) { // TODO test if home folder exists
 					console_printErrln("Folder " + pc.users[i].home + " not found.");
 					// TODO close ssh connection
 					ssh_close(1);
@@ -346,7 +347,7 @@ function cmd_cat(param) {
 		console_finishedCommand(1);
 		return;
 	}
-	var file = getFile(current_computer.pwd, param[1]);
+	var file = getFile(getPwd(current_computer), param[1],current_computer.root);
 	if (file == null) {
 		console_printErrln("cat: " + param[1] + ": No such file or directory");
 		console_finishedCommand(1);
@@ -373,7 +374,7 @@ function cmd_cp(param, flags) {
 		console_printErrln("cp: missing destination file operand after '" + param[1] + "'");
 		console_finishedCommand(1);
 	} else {
-		var src = getFile(current_computer.pwd, param[1]);
+		var src = getFile(getPwd(current_computer), param[1],current_computer.root);
 		if (src == null) {
 			console_printErrln("cp: " + param[1] + ": No such file or directory");
 			console_finishedCommand(1);
@@ -385,15 +386,15 @@ function cmd_cp(param, flags) {
 					return;
 				}
 			}
-			var dest = getFile(current_computer.pwd, param[2], true);
+			var dest = getFile(getPwd(current_computer), param[2], current_computer.root);
 			var name = "";
 			if (dest == null) {
 				var lio = param[2].lastIndexOf("/");
 				if (lio < 0) {
-					dest = current_computer.pwd;
+					dest = getPwd(current_computer);
 					name = param[2];
 				} else {
-					dest = getFile(current_computer.pwd, param[2].substring(0, lio), true);	
+					dest = getFile(getPwd(current_computer), param[2].substring(0, lio),current_computer.root);	
 					name = param[2].substring(lio + 1);
 				}
 				
@@ -424,7 +425,7 @@ function copyFile(src, dest, name) {
 
 function cmd_scp(param) {
 
-	var src = getFile(current_computer.pwd, param[1]);
+	var src = getFile(getPwd(current_computer), param[1],current_computer.root);
 	if (src == null) {
 		console_printErrln("scp: " + param[1] + ": No such file or directory");
 		console_finishedCommand(1);
@@ -445,15 +446,15 @@ function cmd_scp(param) {
 
 	ssh_connect(userhost[0], userhost[1], 
 		function() {
-			var dest = getFile(current_computer.pwd, parts[1], true);
+			var dest = getFile(getPwd(current_computer), parts[1],current_computer.root);
 			var name = "";
 			if (dest == null) {
 				var lio = parts[1].lastIndexOf("/");
 				if (lio < 0) {
-					dest = current_computer.pwd;
+					dest = getPwd(current_computer);
 					name = parts[1];
 				} else {
-					dest = getFile(current_computer.pwd, parts[1].substring(0, lio), true);	
+					dest = getFile(getPwd(current_computer), parts[1].substring(0, lio),current_computer.root);	
 					name = parts[1].substring(lio + 1);
 				}
 				
@@ -519,4 +520,14 @@ function simpleHack(param, service, minVersion, maxVersion, duration) {
 		console_finishedCommand(1);
 	},duration); // TODO change with internet speed
 
+}
+
+
+
+
+
+function cmd_save(param) {
+	saveGame();
+	console_println("4th wall break: the game has been saved");
+	console_finishedCommand();
 }
