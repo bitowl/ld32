@@ -1,8 +1,9 @@
 
 var admin_usernames = ["admin", "administrator", "yoda", "master"];
 
-var usernames = [""];
+var usernames = ["peter", "www-data", "marc", "jens", "stefan", "student", "teacher", "hannah", "cat", "dog", "meauw", "mantara", "eclipse", "work", "jk", "mn", "ar", "jannis", "pete", "games", "hidden", "mom", "dad"];
 
+var hostnames = ["web", "floorbox", "glados", "athen", "rom", "spartha", "alexandria", "pc", "netbook-2432", "netbook-6372", "netbook-6734", "hackcenter", "kitchen-server", "production", "deployment", "development", "testing", "home", "www", "database", "cookiecracker"];
 
 var busybox = [
 {
@@ -126,25 +127,30 @@ var services = {
 	"bealake": {
 		name: "bealake",
 		cmd: svc_bealake,
+		maxVersion: 20,
 	},
 	"mail": {
 		name: "mail",
 		cmd: svc_mail,
+		maxVersion: 10,
 	},
 	"ssh": {
 		name: "ssh",
 		cmd: svc_ssh,
+		maxVersion: 7,
+	},
+	"ftp": {
+		name: "ftp",
+		cmd: svc_ftp,
+		maxVersion: 5	
 	}
 }
 
-// creates a new random pc for the internet based on the seed
-function setUpRandomPC(seed) {
-	var ip = getRandomIP(seed);
-
-	if (internet[ip] != null) {return;} // TODO create new one?
-
+// creates a new random pc for the internet based on the seed and an ip
+function setUpRandomPC(seed, ip) {
 	var computer = {
-		hostname: "mylittlepc",
+		hostname: randomArr(seed, hostnames),
+		ping: randomInt(seed, 1000),
 		ip: ip,
 		pc: 0,					// programm counter
 		users: [],				// users
@@ -166,6 +172,13 @@ function setUpRandomPC(seed) {
 		files:[]
 	};
 	computer.root.files.push(bin);
+	var svc = {
+		directory:true,
+		name: "services",
+		files:[] 
+	};
+	bin.files.push(svc);
+
 	mergeFiles(bin, busybox);
 	if (randomBool(seed)) {
 		mergeFiles(bin, internet_tools);
@@ -180,7 +193,7 @@ function setUpRandomPC(seed) {
 	console.log(userCount);
 	computer.users.push({
 		name: "root",
-		password: "notreallyhard",
+		password: generateRandomPassword(seed),
 		groups: [
 		],
 		path: ["/bin", "/sbin"],
@@ -194,8 +207,8 @@ function setUpRandomPC(seed) {
 		}
 		// TODO check for double usernames
 		computer.users.push({
-		name: randomArr(seed, admin_usernames),
-		password: "notreallyhard",
+		name: admin?randomArr(seed, admin_usernames):randomArr(seed, usernames),
+		password: generateRandomPassword(seed),
 		groups: [
 		],
 		path: ["/bin", "/sbin"],
@@ -204,15 +217,55 @@ function setUpRandomPC(seed) {
 	};
 
 
+	for (service in services) {
+		if (random(seed) < 0.5) { // 50% chance for every service
+			console.log("set up service "+service);
+			var sr = clone(services[service]);
+			sr.version = randomInt(seed, services[service].maxVersion);
+			delete sr.maxVersion;
+			sr.parent = svc;
+			svc.files.push(sr);
+
+			if (random(seed) < 0.9) { // 90% chance for services to be autostart
+				computer.init.push(service);
+			}
+		}
+	}
+
+
+
 
 	internet[ip] = computer;
 	boot(computer);
+	return computer;
 }
 
 function getRandomIP(seed) {
-	// TODO check if it already exists!!!
-	return Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256);
+	var ip = Math.floor(random(seed) * 255) + "." + Math.floor(random(seed) * 255) + "." + Math.floor(random(seed) * 255) + "." + Math.floor(random(seed) * 255);
+	while (internet[ip] != null) { // don't report an already existing ip
+		ip = Math.floor(random(seed) * 255) + "." + Math.floor(random(seed) * 255) + "." + Math.floor(random(seed) * 255) + "." + Math.floor(random(seed) * 255);
+	}
+	return ip;
 }
+
+function generateRandomPassword(seed) {
+	var length = randomInt(seed, 20);
+	var passwd = "";
+	for (var i = 0; i < length; i++) {
+		var rand = random(seed);
+		if (rand < 0.6) {  // 60% small letters
+			passwd += randomStr(seed, "abcdefghijklnopqrstuvwxyz");
+		} else if (rand < 0.8) { // 20% BIG LETTers
+			passwd += randomStr(seed, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		} else if (rand < 0.95) { // 15% numbers
+			passwd += randomStr(seed, "0123456789");
+		} else { // 5% special characters
+			passwd += randomStr(seed, " !§$%&/()=?#-.,_+");
+		}
+	};
+	return passwd;
+}
+
 function mergeFiles(folder, files) {
 	for (var i = 0; i < files.length; i++) {
 		folder.files.push(files[i]);

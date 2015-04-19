@@ -131,6 +131,9 @@ function randomBool(obj) {
 function randomArr(obj, arr) {
     return arr[Math.floor(random(obj)*arr.length)];
 }
+function randomStr(obj, str) {
+    return str.charAt(Math.floor(random(obj)*str.length));
+}
 
 // http://stackoverflow.com/a/1473742
 function inArray(value, array) {
