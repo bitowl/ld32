@@ -25,6 +25,17 @@ function getHost(current_pc, ip) {
 	return internet[ip];
 }
 
+function getPing(pc1, pc2) {
+	if (pc1 == pc2) {
+		return Math.floor(Math.random() * 20);
+	}
+
+	var ping1 = Math.floor(pc1.ping + pc1.ping * ((Math.random() - 0.3) / 10));
+	var ping2= Math.floor(pc2.ping + pc2.ping *((Math.random() - 0.5) / 10));
+	console.log("ping1: "+ping1+" / ping2: " +ping2);
+	return ping1 + ping2;
+}
+
 var portMeanings = {
 	21:  "21/tcp   open  ftp",
 	22:  "22/tcp   open  ssh",

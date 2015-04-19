@@ -282,6 +282,7 @@ function generatePC(seed, config) {
 	var computer = {
 		hostname: config.hostname?config.hostname:generateHostname(seed),
 		ip: ip,
+		ping: config.ping?config.ping:randomInt(seed, config.maxPing?config.maxPing:1000),
 		pc: 0,					// programm counter
 		users: [],				// users
 		pwd: {},				// current directory
@@ -395,6 +396,7 @@ function generateOwnPC(seed, user, passwd) {
 	var computer = {
 		hostname: "mylittlepc",
 		ip: ip,
+		ping: 100,
 		pc: 0,					// programm counter
 		users: [],				// users
 		pwd: {},				// current directory

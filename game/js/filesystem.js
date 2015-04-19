@@ -20,7 +20,6 @@ function newDirectory(parent, name, owner) {
 // creates a new file in a parent directory
 function newFile(parent, name) {
 	var file = {
-		directory: false,
 		name: name,
 		path: createPath(parent.path, name),
 		parent: parent,

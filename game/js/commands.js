@@ -221,17 +221,17 @@ function cmd_ping(param) {
 	}
 
 	console_println("PING " + ip + " 56(84) bytes of data.");
-	var time = 1 + Math.random(); 
+	var time = getPing(current_computer, pc);
 	setTimeout(function() {
-		ping_callback(1, ip, time);
+		ping_callback(1, ip, time, pc);
 	}, time);
 }
-function ping_callback(icmp_seq, ip, time) {
+function ping_callback(icmp_seq, ip, time, pc) {
 	console_println("64 bytes from " + ip + ": icmp_seq=" + icmp_seq +" ttl=56 time="+time+" ms");
 	if (icmp_seq < 4) {
-		var time = 1 + Math.random(); 
+		var time = getPing(current_computer, pc);
 		setTimeout(function() {
-			ping_callback(++icmp_seq, ip, time);
+			ping_callback(++icmp_seq, ip, time, pc);
 		}, time+1000);
 	} else {
 		// print statistics
@@ -270,7 +270,7 @@ function ssh_connect(user, host, afterConnect) {
 
 	if (pc.ports[22] == null) { // TODO implement ssh servers running on secret ports
 		setTimeout(function() {console_printErrln("ssh: connect to host " + host + " port 22: Connection timed out");
-		console_finishedCommand(1);}, 1000); // TODO configure
+		console_finishedCommand(1);}, 4*getPing(current_computer,pc));
 		return;
 	}
 	console_print("Password: ");
@@ -339,7 +339,7 @@ function cmd_nmap(param) {
 	}
 
 	console_println("Starting Nmap");
-	setTimeout(function(){nmap_results(host)}, 1000); // TODO depend on connection speed
+	setTimeout(function(){nmap_results(host)}, 10 * getPing(current_computer, host)); // TODO depend on connection speed
 }
 function nmap_results(host) {
 	console_println("Nmap scan report for " + host.ip);
@@ -558,7 +558,7 @@ function cmd_scp(param) {
 			}
 			
 			copyFile(src, dest, name);
-			ssh_close(0);
+			setTimeout(function(){ssh_close(0);},Math.random()*2000);
 		}
 	);
 }

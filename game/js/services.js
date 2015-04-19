@@ -109,8 +109,18 @@ function svc_ssh(pc, process, start) {
 }
 function svc_mail(pc, process, start) {
 	if (start) {
-		process.mail = function(user, subject, from, content, callback) {
+		process.mail = function(u,s,f,c,a) {real_sendMail(pc,u,s,f,c,a);}
+		return bindPort(pc, process.id, 25) && bindPort(pc, process.id, 110) && bindPort(pc, process.id, 143);
+	} else {
+		unbindPort(pc, process.id, 25);
+		unbindPort(pc, process.id, 110);
+		unbindPort(pc, process.id, 143);
+	}
+}
+
+function real_sendMail(pc,user, subject, from, content, callback)  {
 			for (var i = 0; i < pc.users.length; i++) {
+				console.log(pc.users[i]);
 				if(pc.users[i].name == user) {
 					var dir = getFileByAbsolutePath(createPath(pc.users[i].home,"mails"), pc.root);
 					if (dir == null) {
@@ -128,6 +138,7 @@ Subject: " + subject+ "\n\
 \n\
 " + content,
 parent:dir});
+
 					if (current_computer == pc && current_computer.current_user == pc.users[i]) {
 						console_println("\nmail: you got new mail. use the mail command to read the newest.")
 					}
@@ -137,13 +148,6 @@ parent:dir});
 			}
 			callback("User " + user +" not found");
 		}
-		return bindPort(pc, process.id, 25) && bindPort(pc, process.id, 110) && bindPort(pc, process.id, 143);
-	} else {
-		unbindPort(pc, process.id, 25);
-		unbindPort(pc, process.id, 110);
-		unbindPort(pc, process.id, 143);
-	}
-}
 
 function sendMail(user, host, subject, from, content, callback) {
 	if (internet[host] == null) {
@@ -154,7 +158,7 @@ function sendMail(user, host, subject, from, content, callback) {
 	if (pc.ports[25] != null) {
 		setTimeout(function() {
 			pc.running[pc.ports[25]].mail(user, subject, from, content, callback);
-		}, 4000); // TODO configure with internet speed
+		}, getPing(current_computer.ping, 100) * 200);
 	} else {
 		callback("no Mailserver found");
 		return;
