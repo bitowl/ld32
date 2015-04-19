@@ -243,26 +243,33 @@ function console_cmd_End() {
 }
 function console_cmd_Complete() {
 	var dir = getPwd(current_computer);
-	var possibilites = [];
+	var possibilities = [];
 	var lastPart = console_cmd.substring(console_cmd.lastIndexOf(" ")+1);
 
 	for (var i = 0; i < dir.files.length; i++) {
 		if ((dir.files[i].name+"").startsWith(lastPart)){
-			possibilites.push(dir.files[i].name+"");
+			possibilities.push(dir.files[i].name+"");
 		}
 	}
-	console.log(possibilites);
-	if (possibilites.length > 1) {
+	console.log(possibilities);
+	if (possibilities.length > 1) {
 		console_print("\n");
-		for (var i = 0; i < possibilites.length; i++) {
-			console_println(possibilites[i]);
+		for (var i = 0; i < possibilities.length; i++) {
+			console_println(possibilities[i]);
 		};
 		computer_printPS(current_computer);
+
+		// are there more characters common among all the possibilities?
+		var common = sharedStart(possibilities).substring(lastPart.length);
+		console_cmd += common;
+		console_cmd_position = console_cmd.length;
 		console_insert(console_cmd);
-	} else if (possibilites.length == 1) {
-		console_insert(possibilites[0].substring(lastPart.length));
+
+
+	} else if (possibilities.length == 1) {
+		console_insert(possibilities[0].substring(lastPart.length));
 		console_updatePosition();
-		console_cmd+=possibilites[0].substring(lastPart.length);
+		console_cmd+=possibilities[0].substring(lastPart.length);
 		console_cmd_position = console_cmd.length;
 	}
 }
@@ -292,7 +299,7 @@ function console_pwd_Enter() {
 // set the console into the password entering state
 // calls the callback function when the password is entered
 function console_enterPassword(callback) {
-	console.log("set callback: " + callback);
+	// console.log("set callback: " + callback);
 	console_pwd_callback = callback;
 	console_state = console_state_passwd;
 }

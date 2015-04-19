@@ -5,7 +5,7 @@ function setUp() {
 
 	console_setUp();
 
-	console.log(localStorage.getItem("internet") + (localStorage.getItem("internet") == null));
+	// console.log(localStorage.getItem("internet") + (localStorage.getItem("internet") == null));
  	if (localStorage.getItem("internet") == null) {
  		// first start
  		startFirstGame();
@@ -15,6 +15,8 @@ function setUp() {
 		// load previous session
 
 		internet = JSONE.parse(localStorage.getItem("internet"));
+		accounts = JSONE.parse(localStorage.getItem("accounts"));
+		tutorial = JSONE.parse(localStorage.getItem("tutorial"));
 
 		// fix all roots
 		for (pc in internet) {
@@ -54,5 +56,7 @@ function startFirstGame() {
 
 function saveGame() {
 	localStorage.setItem("internet",JSONE.stringify(internet));
+	localStorage.setItem("accounts",JSONE.stringify(accounts));
+	localStorage.setItem("tutorial",JSONE.stringify(tutorial));
 	localStorage.setItem("current_pc",current_computer.ip);
 }

@@ -9,9 +9,11 @@ Past goals:
 - save the current progress in local storage
 - getting emails
 - tab file autocompletion
+- easy create a new pc from config with some random and some fixed values for the tutorials
 
 Current goal:
-- easy create a new pc from config with some random and some fixed values for the tutorials
+- money sources
+- some way to buy viruses and firewalls and stuff
 
 Next goals:
 - set of tutorials 
@@ -25,7 +27,7 @@ Next goals:
  - password generator
   - define the strength of a password
  - file generator
-- money sources
+
 
 - fix bugs
 

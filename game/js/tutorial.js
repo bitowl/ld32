@@ -5,22 +5,26 @@ TRIGGER_LIST_FILES = 1
 TRIGGER_CAT_FILE = 2
 TRIGGER_SAVE_GAME = 100
 
-calledTriggers = {}
+var tutorial = {
+	calledTriggers:{},	
+	host: null,
+	user: null,
+
+}
+
 
 var tutip = "123.123.123.123"; // TODO create morpheuscats computer
-var tutuser;
-var tuthost;
 
 function sendTrigger(trigger, params) {
-	if (calledTriggers[trigger]) {
+	if (tutorial.calledTriggers[trigger]) {
 		return;
 	}
-	calledTriggers[trigger] = true;
+	tutorial.calledTriggers[trigger] = true;
 
 	switch(trigger) {
 		case TRIGGER_WELCOME_MAIL:
-		tutuser = params[0];
-		tuthost = params[1];
+		tutorial.user = params[0];
+		tutorial.host = params[1];
 		sendMail(params[0], params[1], "We need your help", "morpheuscat@"+tutip, "Hey " + params[0]+",\n\
 \n\
 We need your help!\n\
@@ -54,21 +58,24 @@ var config = {
 		"/home/admin/projects/admt/passwords",
 		"/home/admin/projects/webmail"
 	],
-	init: ["ssh"]
+	init: ["ssh"],
+	services: {
+		"ssh": "0.2"
+	}
 };
 var seed = getRandom(Math.random());
 var pc = generatePC(seed, config);
-console.log(tuthost);
-var dir = getFileByAbsolutePath("/home/"+tutuser+"/", internet[tuthost].root);
+
+var dir = getFileByAbsolutePath("/home/"+tutorial.user +"/", internet[tutorial.host].root);
 dir.files.push({
 	name:"secretkey.txt",
-	content:
-"user:    admin\n\
+	content:"user:     admin\n\
 password: admin\n\
-ip:       "+pc.ip
+ip:       "+pc.ip,
+	parent: dir
 });
 
-sendMail(tutuser, tuthost, "We're making progress", "morpheuscat@"+tutip, "Hey,\n\
+sendMail(tutorial.user , tutorial.host, "We're making progress", "morpheuscat@"+tutip, "Hey,\n\
 I see you used the magic of the command line to list the files of a directory.\n\
 To print the contents of a file to your screen you can use the command cat.\n\
 Just type cat followed by the name of a file.\n\

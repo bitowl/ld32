@@ -3,9 +3,8 @@ function cmd_pwd(param) {
 	console_finishedCommand();
 }
 function cmd_cd(param) {
-	if (param.length == 1) {
+	if (param.length == 1 || param[1] == "") {
 		current_computer.pwd = current_computer.current_user.home;
-		console_finishedCommand();
 	} else { // enter the directory first given
 		var dir = getFile(getPwd(current_computer), param[1], current_computer.root);
 
@@ -18,7 +17,8 @@ function cmd_cd(param) {
 			console_finishedCommand(1);
 			return;
 		} else {
-			console.log("SET PWD: "+dir.path);
+			console.log(dir);
+			console.log("SET PWD: " + dir.path);
 			current_computer.pwd = dir.path;
 		}
 	}
@@ -67,7 +67,7 @@ function list(dir) {
 		console_println(fileNames[i]);
 	}
 
-	
+
 	sendTrigger(TRIGGER_LIST_FILES);
 	return true;
 }
@@ -84,6 +84,7 @@ function cmd_rm(param, flags) {
 
 			var file = getFile(getPwd(current_computer), param[i],current_computer.root);
 			console.log("delete: "+file+" "+param[i]+" "+i);
+			console.log(file);
 			if (file == null) {
 				console_printErrln("rm: cannot remove '" + param[i] + "': No such file or directory");
 				retVal = 1;
@@ -105,16 +106,19 @@ function cmd_rm(param, flags) {
 				}
 
 				// search file in parent
-				for (var j = 0; j < file.parent.files.length; j++) {
-					if (file.parent.files[j] == file) {
-						file.parent.files.splice(j, 1);
-						break;
-					}
-				}
+				removeFile(file);
 			}
 		}
 		console_finishedCommand(retVal);
 	}
+}
+function removeFile(file) {
+	for (var j = 0; j < file.parent.files.length; j++) {
+		if (file.parent.files[j] == file) {
+			file.parent.files.splice(j, 1);
+			break;
+		}
+	}	
 }
 function cmd_sleep(param) {
 	if (param.length == 1) {
@@ -359,7 +363,7 @@ function cmd_cat(param) {
 		if (file.directory) {
 			console_printErrln("cat: " + param[1] + ": Is a directory");
 			console_finishedCommand(1);
-		} else if (file.executable) {
+		} else if (file.executable || file.content == null) {
 			console_printErrln("cat: " + param[1] + ": Cannot print an executable");
 			console_finishedCommand(1);
 		} else {
@@ -427,6 +431,88 @@ function copyFile(src, dest, name) {
 	file.path = createPath(dest.path, file.name);
 	dest.files.push(file);
 }
+
+function cmd_mv(param, flags) {
+	if (param.length == 1) {
+		console_printErrln("mv: missing file operand");
+		console_finishedCommand(1);
+	} else if (param.length == 2) {
+		console_printErrln("mv: missing destination file operand after '" + param[1] + "'");
+		console_finishedCommand(1);
+	} else {
+		var src = getFile(getPwd(current_computer), param[1],current_computer.root);
+		if (src == null) {
+			console_printErrln("mv: " + param[1] + ": No such file or directory");
+			console_finishedCommand(1);
+		} else {
+			if (src.directory) {
+				if (!inArray("r", flags)) {
+					console_printErrln("mv: omitting directory '" + param[1] + "'");
+					console_finishedCommand(1);
+					return;
+				}
+			}
+			var dest = getFile(getPwd(current_computer), param[2], current_computer.root);
+			var name = "";
+			if (dest == null) {
+				var lio = param[2].lastIndexOf("/");
+				if (lio < 0) {
+					dest = getPwd(current_computer);
+					name = param[2];
+				} else {
+					dest = getFile(getPwd(current_computer), param[2].substring(0, lio),current_computer.root);	
+					name = param[2].substring(lio + 1);
+				}
+				
+
+				if (dest == null) {
+					console_printErrln("mv: " + param[2] + ": No such file or directory");
+					console_finishedCommand(1);
+					return;
+				}
+			}
+			
+			copyFile(src, dest, name);
+			removeFile(src);
+
+			console_finishedCommand();
+		}
+	}
+}
+
+function cmd_mkdir(param) {
+	if (param.length ==  1) {
+		console_printErrln("mkdir FOLDER");
+		return;
+	}
+
+	var dir = getFile(getPwd(current_computer), param[1], current_computer.root);
+	var name = "";
+	if (dir == null) {
+		var lio = param[1].lastIndexOf("/");
+		if (lio < 0) {
+			dir = getPwd(current_computer);
+			name = param[1];
+		} else {
+			dir = getFile(getPwd(current_computer), param[1].substring(0, lio+1),current_computer.root);	
+			name = param[1].substring(lio + 1);
+		}
+
+		if (dir == null) {
+			console_printErrln("mkdir: " + param[1] + ": parent directory not found");
+			console_finishedCommand(1);
+			return;
+		}
+
+		newDirectory(dir, name);
+		console_finishedCommand();
+	} else {
+		console_printErrln("mkdir: " + param[1] + ": directory exists");
+		console_finishedCommand(1);
+	}
+
+}
+
 
 function cmd_scp(param) {
 

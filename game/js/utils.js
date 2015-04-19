@@ -319,4 +319,11 @@ function clone(obj,already = [])
     return obj;
 }
 
-
+// http://stackoverflow.com/a/1917041
+function sharedStart(array){
+    var A= array.slice(0).sort(), 
+    word1= A[0], word2= A[A.length-1], 
+    L= word1.length, i= 0;
+    while(i<L && word1.charAt(i)=== word2.charAt(i)) i++;
+    return word1.substring(0, i);
+}

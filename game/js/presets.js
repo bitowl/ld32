@@ -35,7 +35,16 @@ var busybox = [
 	name: "cp",
 	cmd: function(p,f) {cmd_cp(p,f);}
 },
-
+{
+	executable: true,
+	name: "mv",
+	cmd: function(p,f) {cmd_mv(p,f);}
+},
+{
+	executable: true,
+	name: "mkdir",
+	cmd: function(p,f) {cmd_mkdir(p,f);}
+},
 {
 	executable: true,
 	name: "ps",
@@ -49,7 +58,7 @@ var busybox = [
 {
 	executable: true,
 	name: "service",
-	cmd: function(p,f) {cmd_service(p,f);}
+	cmd: function(p,f,o,c) {cmd_service(p,f,o,c);}
 },
 
 
@@ -101,6 +110,33 @@ var internet_tools = [
 }
 ];
 
+var money_tools = [
+{
+	executable:true,
+	name: "bank",
+	cmd: function(p,f) {cmd_bank(p,f);}
+},
+{
+	executable: true,
+	name: "eshop",
+	cmd: function(p,f) {cmd_eshop(p,f);}
+}];
+
+var services = {
+	"bealake": {
+		name: "bealake",
+		cmd: svc_bealake,
+	},
+	"mail": {
+		name: "mail",
+		cmd: svc_mail,
+	},
+	"ssh": {
+		name: "ssh",
+		cmd: svc_ssh,
+	}
+}
+
 // creates a new random pc for the internet based on the seed
 function setUpRandomPC(seed) {
 	var ip = getRandomIP(seed);
@@ -133,6 +169,9 @@ function setUpRandomPC(seed) {
 	mergeFiles(bin, busybox);
 	if (randomBool(seed)) {
 		mergeFiles(bin, internet_tools);
+	}
+	if (randomBool(seed)) {
+		mergeFiles(bin, money_tools);
 	}
 
 	// users
@@ -212,13 +251,16 @@ function generatePC(seed, config) {
 	computer.root.files.push(bin);
 	mergeFiles(bin, busybox);
 	mergeFiles(bin, internet_tools);
+	if (config.money) {
+		mergeFiles(bin, money_tools);
+	}
 
-	var srvc = {
+	var svc = {
 		directory:true,
 		name: "services",
 		files:[] 
 	};
-	bin.files.push(srvc);
+	bin.files.push(svc);
 
 
 
@@ -234,9 +276,9 @@ function generatePC(seed, config) {
 
 	if (config.users) {
 		for (var i = 0; i < config.users.length; i++) {
-			config.users[i]
+			computer.users.push(config.users[i]);
 		};
-		computer.users.push();
+		
 	} else {
 		// GENERATE RANDOM
 	}
@@ -247,30 +289,47 @@ function generatePC(seed, config) {
 		genFolder(computer.root, config.folders[i]);
 	};
 
+	for (service in config.services) {
+		console.log("set up service "+service);
+		var sr = clone(services[service]);
+		sr.version = config.services[service];
+		sr.parent = svc;
+		svc.files.push(sr);
+	}
+
+
 
 	internet[ip] = computer;
 	boot(computer);
 	return computer;
 }
 
-function genFolder(root, path) {
+function genFolder(oRoot, path) {
+	console.log("gen Folder " +path);
 	var parts = path.split("/");
 
-	for (var i = 0; i < parts.length; i++) {
+	var root = oRoot;
+	for (var i = 1; i < parts.length; i++) {
+		var found = false;
 		for (var j = 0; j < root.files.length; j++) {
+			console.log("not:"+root.files[j].name +"<>"+ parts[i]);
 			if (root.files[j].name == parts[i]) {
+				found = true;
 				root = root.files[j];
 				break;
 			}
 		}
-		// no file found
-		var dir = {
-			directory: true,
-			name: parts[i],
-			files:[]
-		};
-		root.files.push(dir);
-		root = dir;
+		if (!found) {
+			console.log("new folder:"+parts[i]);
+			// no file found
+			var dir = {
+				directory: true,
+				name: parts[i],
+				files:[]
+			};
+			root.files.push(dir);
+			root = dir;
+		}
 	};
 }
 
@@ -305,6 +364,7 @@ function generateOwnPC(seed, user, passwd) {
 	computer.root.files.push(bin);
 	mergeFiles(bin, busybox);
 	mergeFiles(bin, internet_tools);
+	mergeFiles(bin, money_tools);
 
 var srvc = {
 	directory:true,
@@ -349,15 +409,26 @@ var srvc = {
 	var own = {
 		directory: true,
 		name: user,
-		files:[]
-	};
-	home.files.push(own);
-
-	own.files.push({
+		files:[{
 		directory:true,
 		name: "mails",
 		files:[]
-	})
+		},
+		{
+			directory:true,
+			name: "private",
+			files:[
+				{
+					name:"bankaccount.txt",
+					content: "id: 12345 pin: 123"
+				}
+			]
+		}
+		]
+	};
+	home.files.push(own);
+
+	own.files.push()
 
 
 

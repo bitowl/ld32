@@ -240,6 +240,11 @@ function computer_exec(pc, uid, cmd ,fg) {
 				pc.current_user.fgPid = process.id;
 				console.log(pc.current_user);
 			}
+			console.log(params);
+			console.log(flags);
+			console.log(process);
+			console.log(pc);
+
 			file.cmd(params, flags, process, pc);
 		}
 	}
@@ -247,7 +252,7 @@ function computer_exec(pc, uid, cmd ,fg) {
 }
 
 function getPwd(pc) {
-	console.log("get pwd for " + pc.ip);
+	console.log("get pwd for " + pc.ip + "("+pc.pwd+")");
 	var pwd= getFileByAbsolutePath(pc.pwd, pc.root);
 	console.log("pwd: "+pwd.path);
 	return pwd;
@@ -267,5 +272,5 @@ function unbindPort(pc, pid, port) {
 }
 
 //boot(current_computer);
-// boot(pc1);
+boot(pc1);
 

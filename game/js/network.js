@@ -3,7 +3,7 @@ var internet = { // THE INTERNET :O
 
 
 var pc1 = {
-		hostname: "mylittlepc",
+		hostname: "masterserver",
 		ip: "1",
 		users: [
 			{
