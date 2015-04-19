@@ -98,7 +98,7 @@ function svc_ssh(pc, process, start) {
 }
 function svc_mail(pc, process, start) {
 	if (start) {
-		process.mail = function(user, subject, content, callback) {
+		process.mail = function(user, subject, from, content, callback) {
 			for (var i = 0; i < pc.users.length; i++) {
 				if(pc.users[i].name == user) {
 					var dir = getFileByAbsolutePath(createPath(pc.users[i].home,"mails"), pc.root);
@@ -108,14 +108,14 @@ function svc_mail(pc, process, start) {
 					}
 
 					dir.files.push({
-						name: new Date().getTime(),
+						name: new Date().getTime()+"-"+from.split("@")[0],
 						content: "Date: " + new Date() + "\n\
+From: " + from +"\n\
 To: " + user + "@" +pc.ip+"\n\
 Content-Type: text/plain\n\
 Subject: " + subject+ "\n\
 \n\
-" + content
-					});
+" + content});
 					if (current_computer == pc && current_computer.current_user == pc.users[i]) {
 						console_println("\nmail: you got new mail. use the mail command to read the newest.")
 					}
@@ -133,14 +133,16 @@ Subject: " + subject+ "\n\
 	}
 }
 
-function sendMail(user, host, subject, content, callback) {
+function sendMail(user, host, subject, from, content, callback) {
 	if (internet[host] == null) {
 		callback("host "+host+" not found");
 		return;
 	}
 	var pc = internet[host];
 	if (pc.ports[25] != null) {
-		pc.running[pc.ports[25]].mail(user, subject, content, callback);
+		setTimeout(function() {
+			pc.running[pc.ports[25]].mail(user, subject, from, content, callback);
+		}, 4000); // TODO configure with internet speed
 	} else {
 		callback("No Mailserver found");
 		return;

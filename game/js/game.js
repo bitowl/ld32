@@ -43,10 +43,7 @@ function startFirstGame() {
 				computer_connect(ownPC, ownPC.users[1]);
 				computer_printPS(current_computer);
 				console_state = console_state_cmd;
-
-				setTimeout(function() {
-					sendTrigger(TRIGGER_WELCOME_MAIL, [username, ownPC.ip]);
-				}, 5000);
+				sendTrigger(TRIGGER_WELCOME_MAIL, [username, ownPC.ip]);
 			},700);
 			
 

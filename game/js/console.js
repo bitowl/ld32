@@ -11,7 +11,8 @@ var console_state_cmd = {
 	left: console_cmd_Left,
 	right: console_cmd_Right,
 	start: console_cmd_Start,
-	end: console_cmd_End
+	end: console_cmd_End,
+	complete: console_cmd_Complete,
 }
 var console_state_wait = {
 	insertChar: wait_nothing,
@@ -22,6 +23,7 @@ var console_state_wait = {
 	right: wait_nothing,
 	start: wait_nothing,
 	end: wait_nothing,
+	complete: wait_nothing,
 };
 var console_pwd = "";
 var console_pwd_callback;
@@ -34,6 +36,7 @@ var console_state_passwd = {
 	right: wait_nothing,
 	start: wait_nothing,
 	end: wait_nothing,
+	complete: wait_nothing,
 }
 
 var console_txt = "";
@@ -47,6 +50,7 @@ var console_state_text = {
 	right: wait_nothing,
 	start: wait_nothing,
 	end: wait_nothing,
+	complete: wait_nothing,
 }
 
 var console_state = console_state_cmd;
@@ -84,6 +88,9 @@ function console_keyDown(event) {
 			break;
 	}
 	switch(event.which) {
+		case 9: // tab
+			console_state.complete();
+			break;
 		case 13: // enter
 			console_state.enter();
 			break;
@@ -234,6 +241,33 @@ function console_cmd_End() {
 	console_cmd_position = console_cmd.length;
 	console_updatePosition();
 }
+function console_cmd_Complete() {
+	var dir = getPwd(current_computer);
+	var possibilites = [];
+	var lastPart = console_cmd.substring(console_cmd.lastIndexOf(" ")+1);
+
+	for (var i = 0; i < dir.files.length; i++) {
+		if ((dir.files[i].name+"").startsWith(lastPart)){
+			possibilites.push(dir.files[i].name+"");
+		}
+	}
+	console.log(possibilites);
+	if (possibilites.length > 1) {
+		console_print("\n");
+		for (var i = 0; i < possibilites.length; i++) {
+			console_println(possibilites[i]);
+		};
+		computer_printPS(current_computer);
+		console_insert(console_cmd);
+	} else if (possibilites.length == 1) {
+		console_insert(possibilites[0].substring(lastPart.length));
+		console_updatePosition();
+		console_cmd+=possibilites[0].substring(lastPart.length);
+		console_cmd_position = console_cmd.length;
+	}
+}
+
+
 
 function wait_nothing() {
 	// Karpardor setzt Platscher ein... Nicht passiert

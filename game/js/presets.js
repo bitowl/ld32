@@ -171,6 +171,7 @@ function setUpRandomPC(seed) {
 }
 
 function getRandomIP(seed) {
+	// TODO check if it already exists!!!
 	return Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256) + "." + Math.floor(random(seed) * 256);
 }
 function mergeFiles(folder, files) {
@@ -179,6 +180,99 @@ function mergeFiles(folder, files) {
 	}
 }
 
+function generateHostname(seed) {
+	return "TODO";
+}
+
+function generatePC(seed, config) {
+	var ip = getRandomIP(seed);
+
+	var computer = {
+		hostname: config.hostname?config.hostname:generateHostname(seed),
+		ip: ip,
+		pc: 0,					// programm counter
+		users: [],				// users
+		pwd: {},				// current directory
+		root: {
+			directory: true,
+			name: "/",
+			path: "/",
+			parent: null,
+			files:[]
+		},
+		running: [],			// running processes
+		ports: {},				// open ports
+		init: config.init?config.init:[],				// programms started on start
+	};
+	var bin = {
+		directory: true,
+		name: "bin",
+		files:[]
+	};
+	computer.root.files.push(bin);
+	mergeFiles(bin, busybox);
+	mergeFiles(bin, internet_tools);
+
+	var srvc = {
+		directory:true,
+		name: "services",
+		files:[] 
+	};
+	bin.files.push(srvc);
+
+
+
+	// users
+	computer.users.push({
+		name: "root",
+		password: "notreallyhard",
+		groups: [
+		],
+		path: ["/bin", "/sbin"],
+		home: "/"
+	});
+
+	if (config.users) {
+		for (var i = 0; i < config.users.length; i++) {
+			config.users[i]
+		};
+		computer.users.push();
+	} else {
+		// GENERATE RANDOM
+	}
+	
+
+	// generate folders
+	for (var i = 0; i < config.folders.length; i++) {
+		genFolder(computer.root, config.folders[i]);
+	};
+
+
+	internet[ip] = computer;
+	boot(computer);
+	return computer;
+}
+
+function genFolder(root, path) {
+	var parts = path.split("/");
+
+	for (var i = 0; i < parts.length; i++) {
+		for (var j = 0; j < root.files.length; j++) {
+			if (root.files[j].name == parts[i]) {
+				root = root.files[j];
+				break;
+			}
+		}
+		// no file found
+		var dir = {
+			directory: true,
+			name: parts[i],
+			files:[]
+		};
+		root.files.push(dir);
+		root = dir;
+	};
+}
 
 
 function generateOwnPC(seed, user, passwd) {

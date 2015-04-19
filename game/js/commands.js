@@ -55,6 +55,8 @@ function list(dir) {
 		console_finishedCommand(1);
 		return false;
 	}
+
+
 	var fileNames = Array();	
 	for (var i = 0; i < dir.files.length; i++) {
 		fileNames.push(dir.files[i].name);
@@ -64,6 +66,9 @@ function list(dir) {
 	for (var i = 0; i < fileNames.length; i++) {
 		console_println(fileNames[i]);
 	}
+
+	
+	sendTrigger(TRIGGER_LIST_FILES);
 	return true;
 }
 
@@ -223,7 +228,7 @@ function ping_callback(icmp_seq, ip, time) {
 		var time = 1 + Math.random(); 
 		setTimeout(function() {
 			ping_callback(++icmp_seq, ip, time);
-		}, time);
+		}, time+1000);
 	} else {
 		// print statistics
 		console_println("--- " + ip +" ping statistics ---");
@@ -358,6 +363,7 @@ function cmd_cat(param) {
 			console_printErrln("cat: " + param[1] + ": Cannot print an executable");
 			console_finishedCommand(1);
 		} else {
+			sendTrigger(TRIGGER_CAT_FILE, file);
 			// this is a file with content
 			console_println(file.content);
 			console_finishedCommand();

@@ -8,8 +8,10 @@ Past goals:
 - place the programs you can use into real files
 - save the current progress in local storage
 - getting emails
+- tab file autocompletion
 
 Current goal:
+- easy create a new pc from config with some random and some fixed values for the tutorials
 
 Next goals:
 - set of tutorials 
@@ -28,6 +30,8 @@ Next goals:
 - fix bugs
 
 Further Ideas:
+- tab command autocompletion
+- tab path autocompletion
 - command history (up/down)
 - copy/paste? :/
 - running programms parallel (so you are not bored while waiting for your pwcrackers)
