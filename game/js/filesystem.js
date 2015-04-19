@@ -68,8 +68,8 @@ function getFile(parent, name, root) { // TODO split at / (other function?)
 }
 
 function getFileByAbsolutePath(name, root) {
-	console.log("getAbsolulte("+name+","+root.path);
 	console.log(root);
+	console.log("getAbsolulte("+name+","+root.path);
 	var parts = name.split("/");
 	var dir = root;
 	if (typeof root == 'undefined') {

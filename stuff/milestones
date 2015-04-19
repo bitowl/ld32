@@ -6,11 +6,13 @@ Past goals:
 - create a working "file system" with contents
 - parse flags from other parameters
 - place the programs you can use into real files
+- save the current progress in local storage
+- getting emails
 
 Current goal:
-- save the current progress in local storage
 
 Next goals:
+- set of tutorials 
 - create more programs and viruses/exploits to hack them
 - create commands to communicate between computers
  - wget
@@ -21,7 +23,6 @@ Next goals:
  - password generator
   - define the strength of a password
  - file generator
-- irc/email to get tutorial infos
 - money sources
 
 - fix bugs

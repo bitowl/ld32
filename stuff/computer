@@ -5,7 +5,7 @@ computer = {
 	users: [],				// users
 	pwd: {},				// current directory
 	root: {},				// root directory
-	running: [],			// running processes
+	running: {},			// running processes
 	ports: {},				// open ports
 	init: [],				// programms started on start
 };

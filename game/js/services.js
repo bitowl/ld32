@@ -14,13 +14,13 @@ function cmd_service(params, flag, process, pc) {
 			kill: wait_nothing, // TODO service killing routine
 			interrupt: wait_nothing
 		}
-		pc.running.push(process);
+		pc.running[process.id] = process;
 
 		file.process = process;
 		if (file.cmd(pc, process, true)) {
 			console_println("service " + params[2] + " started.");
 		} else {
-			pc.running.splice(pc.running.length-1,1);
+			delete pc.running[process.id];
 			console_printErrln("service " + params[2] + " could not be started.");
 		}
 
@@ -37,12 +37,7 @@ function cmd_service(params, flag, process, pc) {
 			console_finishedCommand(1);
 			return;
 		}
-		for (var i = 0; i < pc.running.length; i++) {
-			if (pc.running[i] == file.process) {
-				pc.running.splice(i, 1);
-				break;
-			}
-		}
+		delete pc.running[file.process.id];
 		// delete this process
 		file.cmd(pc, file.process, false);
 		console_println("service " + params[2] + " stopped.");
@@ -69,11 +64,11 @@ function init_service(pc, service) {
 		kill: wait_nothing, // TODO service killing routine
 		interrupt: wait_nothing
 	}
-	pc.running.push(process);
+	pc.running[process.id] =process;
 
 	file.process = process;
 	if (!file.cmd(pc, process, true)) {
-		pc.running.splice(pc.running.length-1,1);
+		delete pc.running[process.id];
 		console.log("service " + service + " could not be started.");
 	}
 	
@@ -100,4 +95,57 @@ function svc_ssh(pc, process, start) {
 	} else {
 		unbindPort(pc, process.id, 22);
 	}
+}
+function svc_mail(pc, process, start) {
+	if (start) {
+		process.mail = function(user, subject, content, callback) {
+			for (var i = 0; i < pc.users.length; i++) {
+				if(pc.users[i].name == user) {
+					var dir = getFileByAbsolutePath(createPath(pc.users[i].home,"mails"), pc.root);
+					if (dir == null) {
+						callback("user has no home directory");
+						return;
+					}
+
+					dir.files.push({
+						name: new Date().getTime(),
+						content: "Date: " + new Date() + "\n\
+To: " + user + "@" +pc.ip+"\n\
+Content-Type: text/plain\n\
+Subject: " + subject+ "\n\
+\n\
+" + content
+					});
+					if (current_computer == pc && current_computer.current_user == pc.users[i]) {
+						console_println("\nmail: you got new mail. use the mail command to read the newest.")
+					}
+					callback("mail send");
+					return;
+				}
+			}
+			callback("User " + user +" not found");
+		}
+		return bindPort(pc, process.id, 25) && bindPort(pc, process.id, 110) && bindPort(pc, process.id, 143);
+	} else {
+		unbindPort(pc, process.id, 25);
+		unbindPort(pc, process.id, 110);
+		unbindPort(pc, process.id, 143);
+	}
+}
+
+function sendMail(user, host, subject, content, callback) {
+	if (internet[host] == null) {
+		callback("host "+host+" not found");
+		return;
+	}
+	var pc = internet[host];
+	if (pc.ports[25] != null) {
+		pc.running[pc.ports[25]].mail(user, subject, content, callback);
+	} else {
+		callback("No Mailserver found");
+		return;
+	}
+
+
+	return "Mail send successfully";
 }

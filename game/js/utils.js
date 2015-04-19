@@ -295,9 +295,6 @@ JSONE.parse = function(txt)
 //Funktion, die auch Objekte klont, die sich selbst enthalten
 function clone(obj,already = [])
 {
-    
-
-
     if(typeof obj === "object")
     {
         for(var i in already)

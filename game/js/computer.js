@@ -1,5 +1,5 @@
 // TMP set up current computer
-var current_computer = {
+/* var current_computer = {
 	hostname: "mylittlepc",
 	ip: "127.0.0.1",
 	pc: 0,
@@ -25,7 +25,7 @@ var current_computer = {
 		}
 	],
 	pwd: null,
-	init:[],
+	init:["mail"],
 	root: {
 		directory: true,
 		name: "/",
@@ -127,6 +127,11 @@ var current_computer = {
 								name: "bealake",
 								cmd: svc_bealake,
 								version: 3.14
+							},
+							{
+								name: "mail",
+								cmd: svc_mail,
+								version: 2.1
 							}
 						]
 					}
@@ -134,25 +139,25 @@ var current_computer = {
 			}
 		]
 	},
-	running: [],
+	running: {},
 	ports: {}
 };
 current_computer.current_user = current_computer.users[0];
 current_computer.pwd = "/home/bitowl";//current_computer.root.files[0].files[0].path;
+*/
 
-
-internet["127.0.0.1"] = current_computer;
+// internet["127.0.0.1"] = current_computer;
 
 // END TMP
 
 function boot(pc) {
 	setUpDirectories(pc.root);
 
-	pc.running.push({
+	pc.running[1] = {
 		id: 1,
 		name: "init",
 		uid: 0,
-	});
+	};
 	pc.pid = 2;
 
 	for (var i = 0; i < pc.init.length; i++) {
@@ -169,6 +174,13 @@ function computer_printPS(pc) {
 	}
 	
 	console_print("$ ");
+}
+
+function computer_connect(pc, user){
+	current_computer = pc;
+	current_computer.current_user = user;
+	current_computer.pwd = user.home;
+	// TODO start mlsh process
 }
 
 function computer_exec(pc, uid, cmd ,fg) {
@@ -222,7 +234,7 @@ function computer_exec(pc, uid, cmd ,fg) {
 				kill: wait_nothing,
 				interrupt: wait_nothing
 			}
-			pc.running.push(process);
+			pc.running[process.id] = process;
 			
 			if (fg) {
 				pc.current_user.fgPid = process.id;
@@ -254,6 +266,6 @@ function unbindPort(pc, pid, port) {
 	}
 }
 
-boot(current_computer);
-boot(pc1);
+//boot(current_computer);
+// boot(pc1);
 

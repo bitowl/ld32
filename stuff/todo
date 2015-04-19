@@ -4,7 +4,9 @@ stuff i should do sometimes later:
  - make Strg+C work to quit commands
   - make ping continus like the real one
  - save space by not saving complete pcs but only the seeds
-
+ - tab autocompletion
 BUGS
 minor:
  - when you go from a pc via ssh to the same pc, then switch the folder and then go back, we are still in the same folder
+major:
+ - remove save command directly from process stack (else it will still be there when the save is loaded)

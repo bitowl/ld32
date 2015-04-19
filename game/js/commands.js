@@ -144,7 +144,7 @@ function cmd_hostname(param) {
 	} else {
 		// TODO check for root
 		current_computer.hostname = param[1];
-		console.console_finishedCommand();
+		console_finishedCommand();
 	}
 }
 function cmd_passwd(param) {
@@ -274,15 +274,14 @@ function ssh_callback(tries, user, pc, passwd, afterConnect) {
 			if (pc.users[i].password == passwd) {
 				ssh_stack.push(current_computer.ip);
 				// correct password				
-				current_computer = pc;
-				current_computer.current_user = pc.users[i];
-				current_computer.pwd = pc.users[i].home;
-				if (current_computer.pwd == null) { // TODO test if home folder exists
+				computer_connect(pc, pc.users[i]);
+
+				/*if (current_computer.pwd == null) { // TODO test if home folder exists
 					console_printErrln("Folder " + pc.users[i].home + " not found.");
 					// TODO close ssh connection
 					ssh_close(1);
 					return;
-				}
+				}*/
 
 				// ssh connection successfully established
 				afterConnect();
@@ -473,14 +472,42 @@ function cmd_scp(param) {
 }
 
 function cmd_ps(param) {
-	for (var i = 0; i < current_computer.running.length; i++) {
-		console_println(current_computer.running[i].name+" "+current_computer.running[i].id);
+	console.log(current_computer.running);
+	for (process in current_computer.running) {
+		console_println(current_computer.running[process].name+" "+current_computer.running[process].id);
 	}
 
 	console_finishedCommand();
 }
 
+function cmd_date(param) {
+	console_println(new Date());
+	console_finishedCommand();
+}
 
+
+function cmd_mail(param) {
+	var file = getFileByAbsolutePath(createPath(current_computer.current_user.home, "mails"), current_computer.root);
+	if (file == null) {
+		console_printErrln("mail: you don't have a mails directory in your home folder");
+		console_finishedCommand(1);
+		return;
+	}
+	var biggest = file.files[0];
+	for (var i = 1; i < file.files.length; i++) {
+		if (file.files[i].name > biggest.name) {
+			biggest = file.files[i];
+		}
+	};
+	if (biggest == null) {
+		console_printErrln("mail: you don't have any mails");
+		console_finishedCommand(1);
+		return;
+	}
+	console_println("latest mail:");
+	console_println(biggest.content);
+	console_finishedCommand(0);
+}
 
 
 
@@ -530,4 +557,18 @@ function cmd_save(param) {
 	saveGame();
 	console_println("4th wall break: the game has been saved");
 	console_finishedCommand();
+}
+function cmd_reset(param) {
+	console_println("Do you really want to reset all your progress and start a new game?");
+	console_println("Then type 'Yes I want to reset!'");
+	console_enterText(function(text){
+		if (text == "Yes I want to reset!") {
+			localStorage.removeItem("internet");
+			location.reload();
+		} else {
+			console_printErrln("You can continue playing.");
+			console_finishedCommand(1);
+		}
+
+	});
 }

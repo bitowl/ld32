@@ -36,6 +36,19 @@ var console_state_passwd = {
 	end: wait_nothing,
 }
 
+var console_txt = "";
+var console_txt_callback;
+var console_state_text = {
+	insertChar: console_txt_insertChar,
+	backspace: console_txt_Backspace,
+	del: wait_nothing,
+	enter: console_txt_Enter,
+	left: wait_nothing,
+	right: wait_nothing,
+	start: wait_nothing,
+	end: wait_nothing,
+}
+
 var console_state = console_state_cmd;
 
 function console_setUp() {
@@ -52,7 +65,6 @@ function console_setUp() {
 
 	// startup computer
 	textarea.val("");
-	computer_printPS(current_computer);
 }
 
 function console_keyDown(event) {
@@ -153,13 +165,7 @@ function console_execute(cmd) {
 function console_finishedCommand(retVal) {  // call this when a command has finished execution
    	retVal = typeof retVal !== 'undefined' ? retVal : 0; // by default this execution was happy
 
-   	for (var i = 0; i < current_computer.running.length; i++) {
-   		console.log(current_computer.current_user.fgPid);
-   		if(current_computer.running[i].id == current_computer.current_user.fgPid) {
-   			current_computer.running.splice(i, 1);
-   			break;
-   		}
-   	};
+   	delete current_computer.running[current_computer.current_user.fgPid];
 
 	console_cmd = "";
 	console_cmd_position = 0;
@@ -255,4 +261,30 @@ function console_enterPassword(callback) {
 	console.log("set callback: " + callback);
 	console_pwd_callback = callback;
 	console_state = console_state_passwd;
+}
+
+
+// console state: TEXT
+function console_txt_insertChar(key) {
+	console_txt += key;
+	console_insert(key);
+}
+function console_txt_Backspace() {
+	if (console_txt.length > 0) {
+		console_txt = console_txt.substring(0, console_txt.length - 1);
+		textarea.insertAtCaret("\b");	
+		textarea.val(removeBackspaces(textarea.val()));		
+	}
+}
+
+function console_txt_Enter() {
+	console_print("\n");
+	console_state = console_state_wait;
+	console_txt_callback(console_txt);
+	console_txt = "";
+}
+
+function console_enterText(callback) {
+	console_txt_callback = callback;
+	console_state = console_state_text;
 }
