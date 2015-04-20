@@ -643,6 +643,32 @@ function cmd_note(param) {
 		console_finishedCommand(1);
 		return;
 	}
+	var dest = getFile(getPwd(current_computer), param[1], current_computer.root);
+	var name = "";
+	if (dest == null || !dest.directory) {
+		var lio = param[1].lastIndexOf("/");
+		if (lio < 0) {
+			dest = getPwd(current_computer);
+			name = param[1];
+		} else {
+			dest = getFile(getPwd(current_computer), param[1].substring(0, lio),current_computer.root);	
+			name = param[1].substring(lio + 1);
+		}
+		
+		if (dest == null || !dest.directory) {
+			console_printErrln("note: " + param[1] + ": No such file or directory");
+			console_finishedCommand(1);
+			return;
+		}
+
+		console_print("single line note: ");
+		console_enterText(function(text){
+			var file = newFile(dest, name);
+			file.content = text;
+			console_finishedCommand();
+		});
+		
+	}
 }
 
 

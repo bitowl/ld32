@@ -68,9 +68,10 @@ function createWorld() {
 				content: "morpheuscat@"+mcpc.ip,
 			}
 		],
-		init: ["ssh"],
+		init: ["ssh","mail"],
 		services: {
 			ssh: 7,
+			mail: 6,
 		}
 	};
 	var gcpc = generatePC(seed, config);
@@ -105,9 +106,8 @@ function createWorld() {
 				content: "backup from "+ gcpc.ip+" complete."
 			}
 		],
-		init: ["ssh", "bealake"],
+		init: ["bealake"],
 		services: {
-			ssh: 7,
 			bealake: 17,
 		}
 	};

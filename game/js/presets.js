@@ -68,7 +68,11 @@ var busybox = [
 	name: "exit",
 	cmd: function() {cmd_exit();}
 },
-
+{
+	executable: true,
+	name: "note",
+	cmd: function(p){cmd_note(p);}
+},
 
 // 4th wall breaking things
 {
