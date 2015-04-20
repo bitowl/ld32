@@ -636,12 +636,23 @@ function cmd_pwstrength(param) {
 	console_finishedCommand(0);
 }
 
+function cmd_note(param) {
+	if (param.length != 2) {
+		console_printErrln("note FILE");
+		console_printErrln("drops a single line note into a new file");
+		console_finishedCommand(1);
+		return;
+	}
+}
+
 
 
 
 function cmd_save(param) {
-	saveGame();
-	console_println("4th wall break: the game has been saved");
+	var cnt = saveGame();
+	console_println("the game has been saved");
+	console_println(cnt + " bytes of ~10MB local storage used");
+	
 	console_finishedCommand();
 }
 function cmd_reset(param) {

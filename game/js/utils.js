@@ -290,7 +290,6 @@ JSONE.parse = function(txt)
         var paths=[];
         obj = JSONE.from["addCycle"](obj,paths);
         obj = JSONE.from["addCycle"](obj,paths);
-        obj = JSONE.from["addCycle"](obj,paths);
     }
     return obj;
 }

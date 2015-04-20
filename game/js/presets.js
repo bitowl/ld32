@@ -63,11 +63,11 @@ var busybox = [
 	name: "service",
 	cmd: function(p,f,o,c) {cmd_service(p,f,o,c);}
 },
-{executable:true,
-name: "pwstrength",
-cmd: function(p) {
-	cmd_pwstrength(p);
-}},
+{
+	executable:true,
+	name: "exit",
+	cmd: function() {cmd_exit();}
+},
 
 
 // 4th wall breaking things
@@ -233,10 +233,10 @@ function setUpRandomPC(seed, ip) {
 			name: name,
 			files: []
 		}
-		home.push(hm);
+		home.files.push(hm);
 		if (random(seed)<0.2) { // 20% have an own bank account
 			var acc = getRandBankAccount(seed, random(seed)*999);
-			hm.push({
+			hm.files.push({
 				name: randomArr(seed,account_details),
 				content: "number: " + acc.number+"\npin: "+acc.ping,
 			});
@@ -279,7 +279,9 @@ SMALL = "abcdefghijklnopqrstuvwxyz";
 BIG = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 NUMBER = "0123456789";
 SPECIAL = " !§$%&/()=?#-.,_+";
-function generateRandomPassword(seed) {
+function generateRandomPassword(seed, min, max) {
+	if (min == null) {min = 0;}
+	if (max == null) {max = 100;}
 	var length = randomInt(seed, 20);
 	var passwd = "";
 	for (var i = 0; i < length; i++) {
@@ -294,6 +296,9 @@ function generateRandomPassword(seed) {
 			passwd += randomStr(seed, SPECIAL);
 		}
 	};
+	if (getPasswordStrength(passwd)>max || getPasswordStrength(passwd) < min) {
+		return generateRandomPassword(seed, min, max);
+	}
 	return passwd;
 }
 
@@ -368,7 +373,7 @@ function generatePC(seed, config) {
 	// users
 	computer.users.push({
 		name: "root",
-		password: "notreallyhard",
+		password: generateRandomPassword(seed),
 		groups: [
 		],
 		path: ["/bin", "/sbin"],
@@ -393,9 +398,10 @@ function generatePC(seed, config) {
 	setUpDirectories(computer.root);
 
 	for (var i = 0; i < config.files.length; i++) {
+		console.log("SET UP FILE"+config.files[i]);
 		var dir = getFileByAbsolutePath(config.files[i].path.substring(0, config.files[i].path.lastIndexOf("/")), computer.root);
 		if (dir == null) {
-			console.log("file "+config.files[i]+" COULD NOT BE PLACED :/");
+			console.log("file "+config.files[i].path+" COULD NOT BE PLACED :/");
 			continue;
 		}
 		console.log("ASDFASDF");
@@ -525,7 +531,7 @@ var srvc = {
 	};
 	computer.root.files.push(home);
 
-	var acc = getRandBankAccount(seed, 500); // 500 cross start dollarz
+	var acc = getRandBankAccount(seed, 10); // 10 cross start dollarz
 
 	var own = {
 		directory: true,

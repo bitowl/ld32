@@ -43,6 +43,8 @@ MorpheusCat",function(){});
 		break;
 		case TRIGGER_LIST_FILES:
 
+var acc = getRandBankAccount(getRandom(Math.random()), 400);
+
 // build pc
 var config = {
 	hostname: "whacky",
@@ -62,6 +64,10 @@ var config = {
 		"/home/admin/projects/webmail"
 	],
 	files:[
+		{
+			path: "/home/admin/projects/admt/passwords/bank.txt",
+			content: "number: "+acc.number+"\npin: "+acc.pin
+		}
 	],
 	init: ["ssh"],
 	services: {
@@ -105,9 +111,10 @@ sendMail(tutorial.user , tutorial.host, "Shopping time", "morpheuscat@"+tutorial
 Someone told me, there were banking details on that server. Did you find them?\n\
 If you found them you can use the bank tool to transfer the money to your account (You hopefully wrote your details down somewhere?).\n\
 \n\
-With that money you can go to the eshop and buy a password cracker. I will tell you later how to use that.\n\
+With that money you can go to the eshop. Run the eshop command to get an overview on how to use it. Buy a simple password cracker. I will tell you later how to use that.\n\
 \n\
 MorpheusCat",function(){});
+		break;
 		case TRIGGER_VIRUS_BOUGHT:
 sendMail(tutorial.user , tutorial.host, "Your first hack", "morpheuscat@"+tutorial.morpheuscatIP, "Hey,\n\
 You downloaded your first password cracking tool. You can use it on a server with ssh running to crack the password of a given user, if it is really simple.\n\

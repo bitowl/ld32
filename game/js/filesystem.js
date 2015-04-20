@@ -99,7 +99,7 @@ function createPath(dir, name) {
 
 // goes through the full directory tree and sets parent and path objects
 function setUpDirectories(dir) {
-	//console.log(dir);
+	console.log(dir);
 	for (var i = 0; i < dir.files.length; i++) {
 		dir.files[i].path = createPath(dir.path, dir.files[i].name);
 		dir.files[i].parent = dir;

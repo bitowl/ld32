@@ -65,7 +65,7 @@ function init_service(pc, service) {
 	var file = getFileByAbsolutePath("/bin/services/" + service, pc.root);
 	if (file == null) {
 		console.log("service: " + service + ": service not found");
-		return;
+		return false;
 	}
 
 	var process = {
@@ -82,7 +82,9 @@ function init_service(pc, service) {
 	if (!file.cmd(pc, process, true)) {
 		delete pc.running[process.id];
 		console.log("service " + service + " could not be started.");
+		return false;
 	}
+	return true;
 	
 }
 

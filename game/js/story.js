@@ -54,7 +54,7 @@ function createWorld() {
 		ping: 0,
 		users: [{
 			name: "master",
-			password: generateRandomPassword(seed),
+			password: generateRandomPassword(seed,7,20),
 			groups: ["sudoers"],
 			path: ["/bin"],
 			home: "/home/master/"
@@ -81,7 +81,7 @@ function createWorld() {
 		ping: 0,
 		users: [{
 			name: "admin",
-			password: generateRandomPassword(seed),
+			password: generateRandomPassword(seed,1,10),
 			groups: ["sudoers"],
 			path: ["/bin"],
 			home: "/home/admin"
@@ -89,13 +89,20 @@ function createWorld() {
 		folders: [
 			"/home/admin",
 			"/secret",
-			"/secret/hacks"
+			"/secret/hacks",
+			"/var",
+			"/var/log"
 		],
 		files:[
 			{
 				path:"/secret/hacks/megaPwCracker",
 				executable: true,
 				cmd: function(p) {	pwCracker(p, "ssh", 0,7, 0, 50);}
+			},
+
+			{
+				path:"/var/log/bacula.log",
+				content: "backup from "+ gcpc.ip+" complete."
 			}
 		],
 		init: ["ssh", "bealake"],
@@ -113,18 +120,23 @@ function createWorld() {
 		ping: 12,
 		users: [{
 			name: "admin",
-			password: generateRandomPassword(seed),
+			password: generateRandomPassword(seed,1,10),
 			groups: ["sudoers"],
 			path: ["/bin"],
 			home: "/home/admin"
 		}],
 		folders: [
 			"/home/admin",
+			"/home/admin/manuals"
 		],
 		files:[
 			{
-				path: "/home/admin/nmap.txt",
+				path: "/home/admin/manuals/nmap.txt",
 				content: "use nmap to scan for open ports.\nuse nmap -f to make a full scan which takes longer but maybe finds out which version of the software is running"
+			},
+			{
+				path: "/home/admin/manuals/scp.txt",
+				content: "using scp you can transfer files from one computer to another\nscp SRC USER@HOST:DEST is the correct syntax"
 			}
 		],
 		init: ["ssh", "bealake", "mail"],
@@ -142,7 +154,7 @@ function createWorld() {
 		ping: 42,
 		users: [{
 			name: "admin",
-			password: generateRandomPassword(seed),
+			password: generateRandomPassword(seed,1,5),
 			groups: ["sudoers"],
 			path: ["/bin"],
 			home: "/home/admin"
@@ -155,6 +167,14 @@ function createWorld() {
 			{
 				path:"/home/admin/contract.txt",
 				content: "give moneyz to the space unicorns at "+ sipc.ip
+			},
+			{
+				path:"/bin/pwstrength",
+				executable:true,
+				name: "pwstrength",
+				cmd: function(p) {
+					cmd_pwstrength(p);
+				}
 			}
 		],
 		init: ["bealake"],
@@ -171,7 +191,7 @@ function createWorld() {
 		ping: 80,
 		users: [{
 			name: "admin",
-			password: generateRandomPassword(seed),
+			password: generateRandomPassword(seed,1,10),
 			groups: ["sudoers"],
 			path: ["/bin"],
 			home: "/home/admin"

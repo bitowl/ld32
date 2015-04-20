@@ -205,7 +205,33 @@ var shop = {
 			}
 		}
 		]
+	},
+	user_grabber: {
+		desc: "get the usernames by exploiting the email server <7",
+		price: 80,
+		files: [
+		{
+			name: "user_grabber",
+			executable: true,
+			cmd: function(p) {
+				userGrabber(p, "mail",0, 7, 2000);
+			}
+		}]
+	},
+	service_starter: {
+		desc: "uses an exploit in bealake <10 to start another installed service",
+		price: 50,
+		files: [
+		{
+			name: "service_starter",
+			executable: true,
+			cmd: function(p) {
+				hack_startService(p, "bealake", 0, 7, 2000);
+			}
+		}
+		]	
 	}
+
 
 }
 

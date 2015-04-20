@@ -12,6 +12,7 @@ function setUp() {
 
 	} else {
 		console.log("load previous game");
+		console.log(localStorage.getItem("internet").length+" bytes");
 		// load previous session
 
 		internet = JSONE.parse(localStorage.getItem("internet"));
@@ -21,6 +22,7 @@ function setUp() {
 		// fix all roots
 		for (pc in internet) {
 			internet[pc].root.parent = null;
+			setUpDirectories(internet[pc].root);
 		}
 
 		current_computer = internet[localStorage.getItem("current_pc") ];
@@ -56,8 +58,23 @@ function startFirstGame() {
 
 
 function saveGame() {
+	for (pc in internet) {
+		// we don't want to save all that stuff
+		removeParents(internet[pc].root);
+	}
+
 	localStorage.setItem("internet",JSONE.stringify(internet));
 	localStorage.setItem("accounts",JSONE.stringify(accounts));
 	localStorage.setItem("tutorial",JSONE.stringify(tutorial));
 	localStorage.setItem("current_pc",current_computer.ip);
+	return localStorage.getItem("internet").length;
+}
+
+
+function removeParents(dir) {
+	delete dir["parent"];
+	if (dir.files == null) {return;}
+	for (var i = 0; i < dir.files.length; i++) {
+		removeParents(dir.files[i]);
+	};
 }
