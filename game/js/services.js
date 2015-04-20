@@ -1,9 +1,4 @@
 function cmd_service(params, flag, process, pc) {
-	console.log(params);
-	console.log(flag);
-	console.log(process);
-	console.log(pc);
-
 	if (params.length == 0) {
 
 		console_finishedCommand(1);
@@ -61,10 +56,10 @@ function cmd_service(params, flag, process, pc) {
 }
 
 function init_service(pc, service) {
-	console.log("initializing service " + service);
+	// console.log("initializing service " + service);
 	var file = getFileByAbsolutePath("/bin/services/" + service, pc.root);
 	if (file == null) {
-		console.log("service: " + service + ": service not found");
+		// console.log("service: " + service + ": service not found");
 		return false;
 	}
 
@@ -81,7 +76,7 @@ function init_service(pc, service) {
 	file.process = process;
 	if (!file.cmd(pc, process, true)) {
 		delete pc.running[process.id];
-		console.log("service " + service + " could not be started.");
+		// console.log("service " + service + " could not be started.");
 		return false;
 	}
 	return true;
@@ -122,9 +117,9 @@ function svc_mail(pc, process, start) {
 }
 
 function real_sendMail(pc, user, subject, from, content, callback)  {
-	console.log(pc);
+	// console.log(pc);
 			for (var i = 0; i < pc.users.length; i++) {
-				console.log(pc.users[i]);
+				//console.log(pc.users[i]);
 				if(pc.users[i].name == user) {
 					var dir = getFileByAbsolutePath(createPath(pc.users[i].home,"mails"), pc.root);
 					if (dir == null) {

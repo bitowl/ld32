@@ -74,7 +74,7 @@ function computer_exec(pc, uid, cmd ,fg) {
 					params.push(parts[i]);
 				}
 			};
-			console.log("p: " + params+" f: "+flags);
+			// console.log("p: " + params+" f: "+flags);
 			var process = {
 				id: pc.pid++,
 				uid: uid,
@@ -86,12 +86,12 @@ function computer_exec(pc, uid, cmd ,fg) {
 			
 			if (fg) {
 				pc.current_user.fgPid = process.id;
-				console.log(pc.current_user);
+				// console.log(pc.current_user);
 			}
-			console.log(params);
-			console.log(flags);
-			console.log(process);
-			console.log(pc);
+			// console.log(params);
+			// console.log(flags);
+			// console.log(process);
+			// console.log(pc);
 
 			file.cmd(params, flags, process, pc);
 		}
@@ -100,9 +100,7 @@ function computer_exec(pc, uid, cmd ,fg) {
 }
 
 function getPwd(pc) {
-	console.log("get pwd for " + pc.ip + "("+pc.pwd+")");
-	var pwd= getFileByAbsolutePath(pc.pwd, pc.root);
-	console.log("pwd: "+pwd.path);
+	var pwd = getFileByAbsolutePath(pc.pwd, pc.root);
 	return pwd;
 }
 

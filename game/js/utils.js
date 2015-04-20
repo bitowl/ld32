@@ -45,7 +45,7 @@ else if (input.createTextRange) {
 }
 
 function setCaretToPos (input, pos) {
-    console.log("set position:"+pos);
+    // console.log("set position:"+pos);
     setSelectionRange(input, pos, pos);
 }
 

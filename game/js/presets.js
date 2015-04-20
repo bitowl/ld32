@@ -207,7 +207,7 @@ function setUpRandomPC(seed, ip) {
 	// users
 	var userCount = 5-Math.floor(Math.log2(randomInt(seed, 31)+1));
 
-	console.log(userCount);
+	// console.log(userCount);
 	computer.users.push({
 		name: "root",
 		password: generateRandomPassword(seed),
@@ -250,7 +250,7 @@ function setUpRandomPC(seed, ip) {
 
 	for (service in services) {
 		if (random(seed) < 0.5) { // 50% chance for every service
-			console.log("set up service "+service);
+			// console.log("set up service "+service);
 			var sr = clone(services[service]);
 			sr.version = randomInt(seed, services[service].maxVersion);
 			delete sr.maxVersion;
@@ -402,14 +402,14 @@ function generatePC(seed, config) {
 	setUpDirectories(computer.root);
 
 	for (var i = 0; i < config.files.length; i++) {
-		console.log("SET UP FILE"+config.files[i]);
+		// console.log("SET UP FILE"+config.files[i]);
 		var dir = getFileByAbsolutePath(config.files[i].path.substring(0, config.files[i].path.lastIndexOf("/")), computer.root);
 		if (dir == null) {
 			console.log("file "+config.files[i].path+" COULD NOT BE PLACED :/");
 			continue;
 		}
-		console.log("ASDFASDF");
-		console.log(dir);
+		// console.log("ASDFASDF");
+		// console.log(dir);
 		var file = newFile(dir, config.files[i].path.substring(config.files[i].path.lastIndexOf("/")+1));
 		file.content = config.files[i].content;
 		file.executable = config.files[i].executable;
@@ -418,7 +418,7 @@ function generatePC(seed, config) {
 	}
 
 	for (service in config.services) {
-		console.log("set up service "+service);
+		// console.log("set up service "+service);
 		var sr = clone(services[service]);
 		sr.version = config.services[service];
 		sr.parent = svc;
@@ -433,14 +433,14 @@ function generatePC(seed, config) {
 }
 
 function genFolder(oRoot, path) {
-	console.log("gen Folder " +path);
+	// console.log("gen Folder " +path);
 	var parts = path.split("/");
 
 	var root = oRoot;
 	for (var i = 1; i < parts.length; i++) {
 		var found = false;
 		for (var j = 0; j < root.files.length; j++) {
-			console.log("not:"+root.files[j].name +"<>"+ parts[i]);
+			// console.log("not:"+root.files[j].name +"<>"+ parts[i]);
 			if (root.files[j].name == parts[i]) {
 				found = true;
 				root = root.files[j];
@@ -448,7 +448,7 @@ function genFolder(oRoot, path) {
 			}
 		}
 		if (!found) {
-			console.log("new folder:"+parts[i]);
+			// console.log("new folder:"+parts[i]);
 			// no file found
 			var dir = {
 				directory: true,

@@ -17,8 +17,8 @@ function cmd_cd(param) {
 			console_finishedCommand(1);
 			return;
 		} else {
-			console.log(dir);
-			console.log("SET PWD: " + dir.path);
+			// console.log(dir);
+			// console.log("SET PWD: " + dir.path);
 			current_computer.pwd = dir.path;
 		}
 	}
@@ -45,7 +45,7 @@ function cmd_ls(param) {
 		};
 	}
 	
-	console.log(current_computer);
+	// console.log(current_computer);
 	
 	console_finishedCommand();
 }
@@ -83,8 +83,8 @@ function cmd_rm(param, flags) {
 		for (var i = 1; i < param.length; i++) {
 
 			var file = getFile(getPwd(current_computer), param[i],current_computer.root);
-			console.log("delete: "+file+" "+param[i]+" "+i);
-			console.log(file);
+			// console.log("delete: "+file+" "+param[i]+" "+i);
+			// console.log(file);
 			if (file == null) {
 				console_printErrln("rm: cannot remove '" + param[i] + "': No such file or directory");
 				retVal = 1;
@@ -164,7 +164,7 @@ function cmd_passwd(param) {
 	console_println("Changing password for " + current_computer.current_user.name);
 	console_print("(current) password: ");
 	console_enterPassword(function(passwd) {
-		console.log("callback called");
+		// console.log("callback called");
 		if (passwd == current_computer.current_user.password) {
 			console_print("Enter new password: ");
 			console_enterPassword(function(passwd) {
@@ -439,7 +439,7 @@ function cmd_cp(param, flags) {
 				}
 			}
 			
-			console.log(dest);
+			//console.log(dest);
 
 			copyFile(src, dest, name);
 			console_finishedCommand();
@@ -589,7 +589,7 @@ function cmd_scp(param) {
 }
 
 function cmd_ps(param) {
-	console.log(current_computer.running);
+	//console.log(current_computer.running);
 	for (process in current_computer.running) {
 		console_println(current_computer.running[process].name+" "+current_computer.running[process].id);
 	}

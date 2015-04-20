@@ -68,7 +68,7 @@ function userGrabber(p, s, a, b, d) {
 	});
 }
 
-function startService(p, s, a, b, d) {
+function hack_startService(p, s, a, b, d) {
 	if (p.length != 3) {
 		console_printErrln(p[0]+" HOST SERVICE");
 		console_finishedCommand(1);
@@ -96,8 +96,8 @@ function simpleHack(param, service, minVersion, maxVersion, duration, callback) 
 	console_println("initiate hack...");
 	setTimeout(function(){
 		for (i in host.running) {
-			console.log(host.running);
-			console.log(i);
+			// console.log(host.running);
+			// console.log(i);
 			if (host.running[i] != null && host.running[i].name == service) {
 				// the server is running the affected service...
 				if (host.running[i].version >= minVersion && host.running[i].version <= maxVersion) {

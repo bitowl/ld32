@@ -82,7 +82,7 @@ function console_setUp() {
 
 var console_cmdPressed;
 function console_keyDown(event) {
-	console.log(event.which);
+	// console.log(event.which);
 	switch(event.which) {
 		case 9: // tab
 		case 37: // left
@@ -296,7 +296,7 @@ function console_cmd_Complete() {
 			possibilities.push(dir.files[i].name+"");
 		}
 	}
-	console.log(possibilities);
+	// console.log(possibilities);
 	if (possibilities.length > 1) {
 		console_print("\n");
 		for (var i = 0; i < possibilities.length; i++) {

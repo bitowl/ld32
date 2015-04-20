@@ -17,7 +17,7 @@ function getHost(current_pc, ip) {
 				// a random pc
 				return setUpRandomPC(seed, ip);
 			} else {
-				console.log("this part of the internet is empty");
+				// console.log("this part of the internet is empty");
 			}
 		}
 		return null;
@@ -32,7 +32,7 @@ function getPing(pc1, pc2) {
 
 	var ping1 = Math.floor(pc1.ping + pc1.ping * ((Math.random() - 0.3) / 10));
 	var ping2= Math.floor(pc2.ping + pc2.ping *((Math.random() - 0.5) / 10));
-	console.log("ping1: "+ping1+" / ping2: " +ping2);
+	// console.log("ping1: "+ping1+" / ping2: " +ping2);
 	return ping1 + ping2;
 }
 

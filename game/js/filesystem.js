@@ -46,8 +46,8 @@ function getFile(parent, name, root) { // TODO split at / (other function?)
 		//console.log("return " + dir.path);
 		return dir;
 	} else {
-		console.log("FIND FILE: ");
-		console.log(parent);
+		//console.log("FIND FILE: ");
+		// console.log(parent);
 		if (name.indexOf("/") < 0) {
 			if (!parent.directory) {
 				return null;
@@ -89,7 +89,7 @@ function getFileByAbsolutePath(name, root) {
 }
 
 function createPath(dir, name) {
-	console.log(dir+" "+name);
+	// console.log(dir+" "+name);
 	if (dir.endsWith("/")) {
 		return dir + name;
 	} else {
@@ -99,7 +99,7 @@ function createPath(dir, name) {
 
 // goes through the full directory tree and sets parent and path objects
 function setUpDirectories(dir) {
-	console.log(dir);
+	// console.log(dir);
 	for (var i = 0; i < dir.files.length; i++) {
 		dir.files[i].path = createPath(dir.path, dir.files[i].name);
 		dir.files[i].parent = dir;

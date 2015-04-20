@@ -12,7 +12,7 @@ function setUp() {
 
 	} else {
 		console.log("load previous game");
-		console.log(localStorage.getItem("internet").length+" bytes");
+		// console.log(localStorage.getItem("internet").length+" bytes");
 		// load previous session
 
 		internet = JSONE.parse(localStorage.getItem("internet"));
