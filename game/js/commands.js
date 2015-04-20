@@ -17,16 +17,13 @@ function cmd_cd(param) {
 			console_finishedCommand(1);
 			return;
 		} else {
-			// console.log(dir);
-			// console.log("SET PWD: " + dir.path);
 			current_computer.pwd = dir.path;
 		}
 	}
-
 	console_finishedCommand();
 }
-function cmd_ls(param) {
 
+function cmd_ls(param) {
 	if (param.length == 1) {
 		if (!list(getPwd(current_computer))) {
 			return;
@@ -42,20 +39,17 @@ function cmd_ls(param) {
 			if (!list(getFile(getPwd(current_computer), param[i],current_computer.root))){
 				return;
 			}
-		};
+		}
 	}
-	
-	// console.log(current_computer);
-	
 	console_finishedCommand();
 }
+
 function list(dir) {
 	if (dir == null) {
 		console_printErrln("ls: No such file or directory");
 		console_finishedCommand(1);
 		return false;
 	}
-
 
 	var fileNames = Array();	
 	for (var i = 0; i < dir.files.length; i++) {
@@ -67,14 +61,11 @@ function list(dir) {
 		console_println(fileNames[i]);
 	}
 
-
 	sendTrigger(TRIGGER_LIST_FILES);
 	return true;
 }
 
 function cmd_rm(param, flags) {
-	// TODO seperate into flags and arguments
-
 	if (param.length == 1) {
 		console_printErrln("rm: missing operand");
 		console_finishedCommand(1);
@@ -83,8 +74,6 @@ function cmd_rm(param, flags) {
 		for (var i = 1; i < param.length; i++) {
 
 			var file = getFile(getPwd(current_computer), param[i],current_computer.root);
-			// console.log("delete: "+file+" "+param[i]+" "+i);
-			// console.log(file);
 			if (file == null) {
 				console_printErrln("rm: cannot remove '" + param[i] + "': No such file or directory");
 				retVal = 1;
@@ -96,7 +85,7 @@ function cmd_rm(param, flags) {
 							console_finishedCommand(1);
 							return;
 						} else {
-
+							// TODO recursive
 						}
 					} else {
 						console_printErrln("rm: cannot remove '" + param[i] + ': Is a directory');
@@ -147,9 +136,6 @@ function cmd_echo(param) {
 	console_finishedCommand();
 }
 
-
-
-
 function cmd_hostname(param) {
 	if (param.length == 1) {
 		console_println(current_computer.hostname);
@@ -164,7 +150,6 @@ function cmd_passwd(param) {
 	console_println("Changing password for " + current_computer.current_user.name);
 	console_print("(current) password: ");
 	console_enterPassword(function(passwd) {
-		// console.log("callback called");
 		if (passwd == current_computer.current_user.password) {
 			console_print("Enter new password: ");
 			console_enterPassword(function(passwd) {
@@ -191,9 +176,6 @@ function cmd_passwd(param) {
 	});
 }
 
-
-
-
 var cmd_rand_seed = null;
 function cmd_rand(param) {
 	if (cmd_rand_seed == null) {
@@ -215,7 +197,6 @@ function cmd_seed(param) {
 }
 function cmd_ping(param) {
 	var ip = param[1]; // TODO check
-
 
 	var pc = getHost(current_computer, ip);
 	if (pc == null) {

@@ -13,27 +13,23 @@ Past goals:
 - money sources
 - some way to buy viruses and firewalls and stuff
 - create a few programs and viruses/exploits to hack them
+- some tutorial instructions
+- some commands to communicate between computers
+- random computers in the network you can hack and take over
+ - based on presets
+ - username selected
+ - password generated
+  - define the strength of a password
 
 Current goal:
 
-- set of tutorials 
-
 Next goals:
-
-- create commands to communicate between computers
- - wget
-
-- random computers in the network you can hack and take over
- - based on presets
- - username generator
- - password generator
-  - define the strength of a password
- - file generator
 
 
 - fix bugs
 
 Further Ideas:
+- random file generator
 - tab command autocompletion
 - tab path autocompletion
 - command history (up/down)
