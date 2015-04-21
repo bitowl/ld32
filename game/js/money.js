@@ -226,7 +226,7 @@ var shop = {
 			name: "service_starter",
 			executable: true,
 			cmd: function(p) {
-				hack_startService(p, "bealake", 0, 7, 2000);
+				startService(p, "bealake", 0, 7, 2000);
 			}
 		}
 		]	

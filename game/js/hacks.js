@@ -68,14 +68,14 @@ function userGrabber(p, s, a, b, d) {
 	});
 }
 
-function hack_startService(p, s, a, b, d) {
+function startService(p, s, a, b, d) {
 	if (p.length != 3) {
 		console_printErrln(p[0]+" HOST SERVICE");
 		console_finishedCommand(1);
 		return;
 	}
 	simpleHack(p, s, a, b, d, function(host) {
-		if (startService(host, p[2])) {
+		if (init_service(host, p[2])) {
 			console_println("service successfully started");
 			console_finishedCommand(0);	
 		} else {

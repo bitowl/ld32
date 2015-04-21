@@ -154,7 +154,10 @@ function b64_to_utf8( str ) {
 //Objekte, die Funktionen enthalten
 var JSONE = {};
 JSONE.to = {};
-JSONE.to.removeCycle = function(obj,already = [],lvl = 1,path="PATH#obj"){
+JSONE.to.removeCycle = function(obj,already,lvl,path){
+	already = setDefault(already, []);
+	lvl = setDefault(lvl, 1);
+	path = setDefault(path, "PATH#obj");
     if(typeof obj === "object")
     {
         for(var i in already)
@@ -234,8 +237,11 @@ JSONE.from.addFuncs = function(obj)
     }
     return obj;
 }
-JSONE.from.addCycle = function(obj,paths = [],already = [],path="PATH#obj")
+JSONE.from.addCycle = function(obj, paths, already, path)
 {
+	paths = setDefault(paths, []);
+	already = setDefault(already, []);
+	path = setDefault(path, "PATH#obj");
     for(var i in already)
     {
         if(already[i]===obj)
@@ -295,8 +301,9 @@ JSONE.parse = function(txt)
 }
  
 //Funktion, die auch Objekte klont, die sich selbst enthalten
-function clone(obj,already = [])
+function clone(obj,already)
 {
+	already = setDefault(already, []);
     if(typeof obj === "object")
     {
         for(var i in already)
@@ -328,4 +335,9 @@ function sharedStart(array){
     L= word1.length, i= 0;
     while(i<L && word1.charAt(i)=== word2.charAt(i)) i++;
     return word1.substring(0, i);
+}
+
+
+function setDefault(arg, val) {
+	return typeof arg === 'undefined'?val:arg;
 }
