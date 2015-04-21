@@ -84,6 +84,7 @@ var console_cmdPressed;
 function console_keyDown(event) {
 	// console.log(event.which);
 	switch(event.which) {
+		case 8: // backspace
 		case 9: // tab
 		case 37: // left
 		case 39: // right
@@ -100,6 +101,9 @@ function console_keyDown(event) {
 			break;
 	}
 	switch(event.which) {
+		case 8: // backspace
+			console_state.backspace();
+			return;
 		case 9: // tab
 			console_state.complete();
 			break;
@@ -140,10 +144,6 @@ function console_keyPressed(event) {
 	switch(event.which) {
 		case 0:
 			// key not recognized
-			return;
-		case 8:
-			// backspace
-			console_state.backspace();
 			return;
 
 	}
@@ -193,6 +193,7 @@ function console_println(text) {
 }
 function console_updatePosition() {
 	textarea.caretTo(console_position);
+	textarea.scrollTop(99999);
 }
 
 
